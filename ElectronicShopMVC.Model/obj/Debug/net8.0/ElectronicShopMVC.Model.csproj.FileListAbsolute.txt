@@ -1,0 +1,30 @@
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\bin\Debug\net8.0\ElectronicShopMVC.Model.deps.json
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\bin\Debug\net8.0\ElectronicShopMVC.Model.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\bin\Debug\net8.0\ElectronicShopMVC.Model.pdb
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\bin\Debug\net8.0\ElectronicShopMVC.Utility.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\bin\Debug\net8.0\ElectronicShopMVC.Utility.pdb
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.csproj.AssemblyReference.cache
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.GeneratedMSBuildEditorConfig.editorconfig
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.AssemblyInfoInputs.cache
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.AssemblyInfo.cs
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.csproj.CoreCompileInputs.cache
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\obj\Debug\net8.0\Electron.296B2BCE.Up2Date
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\obj\Debug\net8.0\refint\ElectronicShopMVC.Model.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.pdb
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Model\obj\Debug\net8.0\ref\ElectronicShopMVC.Model.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\bin\Debug\net8.0\ElectronicShopMVC.Model.deps.json
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\bin\Debug\net8.0\ElectronicShopMVC.Model.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\bin\Debug\net8.0\ElectronicShopMVC.Model.pdb
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\bin\Debug\net8.0\ElectronicShopMVC.Utility.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\bin\Debug\net8.0\ElectronicShopMVC.Utility.pdb
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.csproj.AssemblyReference.cache
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.GeneratedMSBuildEditorConfig.editorconfig
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.AssemblyInfoInputs.cache
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.AssemblyInfo.cs
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.csproj.CoreCompileInputs.cache
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\Electron.296B2BCE.Up2Date
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\refint\ElectronicShopMVC.Model.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.pdb
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\ref\ElectronicShopMVC.Model.dll

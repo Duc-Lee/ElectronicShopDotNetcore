@@ -1,0 +1,24 @@
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\bin\Debug\net8.0\ElectronicShopMVC.Utility.deps.json
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\bin\Debug\net8.0\ElectronicShopMVC.Utility.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\bin\Debug\net8.0\ElectronicShopMVC.Utility.pdb
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.csproj.AssemblyReference.cache
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.GeneratedMSBuildEditorConfig.editorconfig
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.AssemblyInfoInputs.cache
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.AssemblyInfo.cs
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.csproj.CoreCompileInputs.cache
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\obj\Debug\net8.0\refint\ElectronicShopMVC.Utility.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.pdb
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.Utility\obj\Debug\net8.0\ref\ElectronicShopMVC.Utility.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\bin\Debug\net8.0\ElectronicShopMVC.Utility.deps.json
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\bin\Debug\net8.0\ElectronicShopMVC.Utility.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\bin\Debug\net8.0\ElectronicShopMVC.Utility.pdb
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.csproj.AssemblyReference.cache
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.GeneratedMSBuildEditorConfig.editorconfig
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.AssemblyInfoInputs.cache
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.AssemblyInfo.cs
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.csproj.CoreCompileInputs.cache
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\refint\ElectronicShopMVC.Utility.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.pdb
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\ref\ElectronicShopMVC.Utility.dll

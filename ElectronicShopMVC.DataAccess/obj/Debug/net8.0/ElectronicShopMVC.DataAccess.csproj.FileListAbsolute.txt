@@ -1,0 +1,34 @@
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.DataAccess.deps.json
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.DataAccess.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.DataAccess.pdb
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.Model.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.Utility.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.Model.pdb
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.Utility.pdb
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.csproj.AssemblyReference.cache
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.AssemblyInfoInputs.cache
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.AssemblyInfo.cs
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.csproj.CoreCompileInputs.cache
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\Electron.10C960F9.Up2Date
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\refint\ElectronicShopMVC.DataAccess.dll
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.pdb
+D:\asp.net\BookShopDotNETCore - Copy\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ref\ElectronicShopMVC.DataAccess.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.DataAccess.deps.json
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.DataAccess.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.DataAccess.pdb
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.Model.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.Utility.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.Model.pdb
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\bin\Debug\net8.0\ElectronicShopMVC.Utility.pdb
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.csproj.AssemblyReference.cache
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.AssemblyInfoInputs.cache
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.AssemblyInfo.cs
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.csproj.CoreCompileInputs.cache
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\Electron.10C960F9.Up2Date
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\refint\ElectronicShopMVC.DataAccess.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.pdb
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ref\ElectronicShopMVC.DataAccess.dll
