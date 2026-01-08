@@ -22,3 +22,4 @@ D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\E
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\refint\ElectronicShopMVC.Utility.dll
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.pdb
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\ref\ElectronicShopMVC.Utility.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Utility\obj\Debug\net8.0\ElectronicShopMVC.Utility.sourcelink.json

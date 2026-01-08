@@ -32,3 +32,4 @@ D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\refint\ElectronicShopMVC.DataAccess.dll
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.pdb
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ref\ElectronicShopMVC.DataAccess.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.DataAccess\obj\Debug\net8.0\ElectronicShopMVC.DataAccess.sourcelink.json

@@ -19,7 +19,7 @@
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.12",
           "Microsoft.EntityFrameworkCore.Tools": "8.0.12",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "8.0.7",
-          "SixLabors.ImageSharp": "3.1.6"
+          "SixLabors.ImageSharp": "3.1.12"
         },
         "runtime": {
           "ElectronicShopMVC.dll": {}
@@ -2054,11 +2054,11 @@
           }
         }
       },
-      "SixLabors.ImageSharp/3.1.6": {
+      "SixLabors.ImageSharp/3.1.12": {
         "runtime": {
           "lib/net6.0/SixLabors.ImageSharp.dll": {
             "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.1.6.0"
+            "fileVersion": "3.1.12.0"
           }
         }
       },
@@ -2502,7 +2502,7 @@
           "Microsoft.EntityFrameworkCore": "8.0.12",
           "Microsoft.EntityFrameworkCore.Relational": "8.0.12",
           "Microsoft.EntityFrameworkCore.SqlServer": "8.0.12",
-          "SixLabors.ImageSharp": "3.1.6"
+          "SixLabors.ImageSharp": "3.1.12"
         },
         "runtime": {
           "ElectronicShopMVC.DataAccess.dll": {
@@ -2517,7 +2517,7 @@
           "Microsoft.AspNetCore.Identity.UI": "8.0.12",
           "Microsoft.AspNetCore.Mvc.ViewFeatures": "2.3.0",
           "Microsoft.Extensions.Identity.Stores": "8.0.12",
-          "SixLabors.ImageSharp": "3.1.6"
+          "SixLabors.ImageSharp": "3.1.12"
         },
         "runtime": {
           "ElectronicShopMVC.Model.dll": {
@@ -3714,12 +3714,12 @@
       "path": "nuget.versioning/6.11.0",
       "hashPath": "nuget.versioning.6.11.0.nupkg.sha512"
     },
-    "SixLabors.ImageSharp/3.1.6": {
+    "SixLabors.ImageSharp/3.1.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-dHQ5jugF9v+5/LCVHCWVzaaIL6WOehqJy6eju/0VFYFPEj2WtqkGPoEV9EVQP83dHsdoqYaTuWpZdwAd37UwfA==",
-      "path": "sixlabors.imagesharp/3.1.6",
-      "hashPath": "sixlabors.imagesharp.3.1.6.nupkg.sha512"
+      "sha512": "sha512-iAg6zifihXEFS/t7fiHhZBGAdCp3FavsF4i2ZIDp0JfeYeDVzvmlbY1CNhhIKimaIzrzSi5M/NBFcWvZT2rB/A==",
+      "path": "sixlabors.imagesharp/3.1.12",
+      "hashPath": "sixlabors.imagesharp.3.1.12.nupkg.sha512"
     },
     "SQLitePCLRaw.bundle_e_sqlite3/2.1.6": {
       "type": "package",

@@ -10,63 +10,91 @@ namespace ElectronicShopMVC.DataAccess.Repository
         private readonly ApplicationDbContext _db;
         internal DbSet<T> dbSet;
 
-        public Repository(ApplicationDbContext? db)
+        public Repository(ApplicationDbContext db)
         {
-            _db = db;
+            _db = db ?? throw new ArgumentNullException(nameof(db));
             this.dbSet = _db.Set<T>();
-            _db.Products.Include(m => m.Category).Include(m => m.CategoryId);
-            _db.UserProductShoppingCarts.Include(m => m.Product).Include(m => m.productId);
         }
-
-        public ApplicationDbContext Db { get; }
 
         public void Add(T entity)
         {
             dbSet.Add(entity);
         }
 
+        public async Task AddAsync(T entity)
+        {
+            await dbSet.AddAsync(entity);
+        }
+
         public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
-            // Bắt đầu truy vấn từ DbSet
-            IQueryable<T> query = dbSet!;
-
-            // Áp dụng điều kiện lọc
+            IQueryable<T> query = dbSet;
             query = query.Where(filter);
-
-            // Nếu có includeProperties, tách các thuộc tính và Include()
             if (!string.IsNullOrEmpty(includeProperties))
             {
-                var properties = includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                foreach (var property in properties)
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    query = query.Include(property.Trim());
+                    query = query.Include(includeProp);
                 }
             }
-
-            // Trả về bản ghi đầu tiên tìm thấy hoặc null nếu không có
             return query.FirstOrDefault();
         }
 
+        public async Task<T?> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
+        {
+            IQueryable<T> query;
+            if (tracked)
+            {
+                query = dbSet;
+            }
+            else
+            {
+                query = dbSet.AsNoTracking();
+            }
+
+            query = query.Where(filter);
+
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+            return await query.FirstOrDefaultAsync();
+        }
 
         public IEnumerable<T> GetAll(string? includeProperties = null)
         {
-            // Bắt đầu truy vấn từ DbSet
             IQueryable<T> query = dbSet;
-
-            // Nếu có includeProperties, tách các thuộc tính và Include()
             if (!string.IsNullOrEmpty(includeProperties))
             {
-                var properties = includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                foreach (var property in properties)
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    query = query.Include(property.Trim());
+                    query = query.Include(includeProp);
                 }
             }
-
-            // Trả về danh sách kết quả
             return query.ToList();
         }
 
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+            return await query.ToListAsync();
+        }
 
         public void Remove(T entity)
         {

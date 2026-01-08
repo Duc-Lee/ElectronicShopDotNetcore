@@ -28,3 +28,4 @@ D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\Ele
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\refint\ElectronicShopMVC.Model.dll
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.pdb
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\ref\ElectronicShopMVC.Model.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC.Model\obj\Debug\net8.0\ElectronicShopMVC.Model.sourcelink.json

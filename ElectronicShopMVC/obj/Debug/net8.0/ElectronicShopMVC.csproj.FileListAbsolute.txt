@@ -625,3 +625,4 @@ D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC\bin\Debug\net8.0\Electroni
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC\obj\Debug\net8.0\Electron.69597FB4.Up2Date
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC\obj\Debug\net8.0\ElectronicShopMVC.genruntimeconfig.cache
 D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC\obj\Debug\net8.0\ref\ElectronicShopMVC.dll
+D:\asp.net\ElectronicShopDotNETcore\ElectronicShopMVC\obj\Debug\net8.0\ElectronicShopMVC.sourcelink.json

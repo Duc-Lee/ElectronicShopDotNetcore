@@ -310,20 +310,6 @@ Solution được chia thành **4 projects** chính:
 - Order → OrderItems: One-to-Many
 - OrderItem → Product: Many-to-One (NoAction on delete)
 
-### 4.3. Seed Data
-- **4 Categories**:
-  1. Hành động (DisplayOrder: 3)
-  2. Kịch tính (DisplayOrder: 2)
-  3. Kinh dị (DisplayOrder: 1)
-  4. Khoa học viễn tưởng (DisplayOrder: 4)
-
-- **6 Products mẫu**:
-  1. Huyền Thoại Rồng Lửa (Hành động, Stock: 10, Price: 120k)
-  2. Mê Cung Tình Yêu (Kịch tính, Stock: 8, Price: 100k)
-  3. Bóng Ma Trong Đêm (Kinh dị, Stock: 12, Price: 110k)
-  4. Vũ Trụ Huyền Bí (Khoa học viễn tưởng, Stock: 5, Price: 130k)
-  5. Sắc Màu Đời Thường (Kịch tính, Stock: 7, Price: 90k)
-  6. Hành Trình Tương Lai (Khoa học viễn tưởng, Stock: 9, Price: 140k)
 
 ---
 
@@ -652,3 +638,11 @@ Dự án **ElectronicShopDotNETcore** là một ứng dụng thương mại đi�
 **Ngày phân tích**: 2025-01-XX
 **Phiên bản phân tích**: 1.0
 
+#### run project
+` dotnet run --project ElectronicShopMVC/ElectronicShopMVC.csproj `
+
+#### build project
+` dotnet build --project ElectronicShopMVC/ElectronicShopMVC.csproj `
+
+#### Lệnh run dockerfile 
+` docker run -p 5000:5000 -p 5001:5001 electronic-shop `
