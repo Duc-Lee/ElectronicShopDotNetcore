@@ -1,4 +1,4 @@
-﻿using ElectronicShopMVC.DataAccess.Data;
+using ElectronicShopMVC.DataAccess.Data;
 using ElectronicShopMVC.DataAccess.Repository.IRepository;
 using System;
 using System.Collections.Generic;
@@ -17,6 +17,9 @@ namespace ElectronicShopMVC.DataAccess.Repository
         public IOrderRepository Order { get; private set; }
         public IOrderItemRepository OrderItem { get; private set; }
         public ICartRepository ShoppingCart { get; private set; }
+        public IVoucherRepository Voucher { get; private set; }
+        public IOrderStatusHistoryRepository OrderStatusHistory { get; private set; }
+        public IPaymentTransactionRepository PaymentTransaction { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -27,6 +30,9 @@ namespace ElectronicShopMVC.DataAccess.Repository
             Order = new OrderRepository(_db);
             OrderItem = new OrderItemRepository(_db);
             ShoppingCart = new CartRepository(_db);
+            Voucher = new VoucherRepository(_db);
+            OrderStatusHistory = new OrderStatusHistoryRepository(_db);
+            PaymentTransaction = new PaymentTransactionRepository(_db);
         }
 
         public void Save()

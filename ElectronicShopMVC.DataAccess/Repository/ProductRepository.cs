@@ -35,8 +35,8 @@ namespace ElectronicShopMVC.DataAccess.Repository
                 productFromDb.Price50 = product.Price50;
                 productFromDb.Price100 = product.Price100;
                 productFromDb.CategoryId = product.CategoryId;
-                productFromDb.Author = product.Author;
-                productFromDb.ISBN = product.ISBN;
+                productFromDb.Brand = product.Brand;
+                productFromDb.SKU = product.SKU;
                 productFromDb.Stock = product.Stock;
 
                 if (product.ImageUrl != null)

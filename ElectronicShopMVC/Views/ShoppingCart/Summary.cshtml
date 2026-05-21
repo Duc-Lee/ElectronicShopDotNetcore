@@ -1,121 +1,269 @@
-﻿@model SummaryVM
+@model SummaryVM
 @{
-    ViewData["Title"] = "Thanh toán";
+    ViewData["Title"] = "Thanh toán đơn hàng";
 }
 
-<h1 class="mt-3">@ViewData["Title"]</h1>
-<hr />
-<form method="Post" asp-action="PlaceOrder">
-    <div class="container">
-        <div class="row">
-            <div class="col-6">
-                <h3 class="mb-3">Chi tiết địa chỉ:</h3>
-                <div class="form-floating mb-3">
-                    <input asp-for="@Model.StreetAddress" class="form-control" aria-required="false" />
-                    <label asp-for="@Model.StreetAddress"></label>
-                    <span asp-validation-for="@Model.StreetAddress" class="text-danger"></span>
-                </div>
+<style>
+    .payment-card {
+        cursor: pointer;
+        border: 2px solid transparent !important;
+        transition: var(--transition-smooth);
+        border-radius: 16px;
+    }
+    .payment-card:hover {
+        border-color: rgba(6, 182, 212, 0.3) !important;
+        transform: translateY(-3px);
+    }
+    .active-payment-card {
+        border-color: var(--accent-blue) !important;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(168, 85, 247, 0.04)) !important;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1) !important;
+    }
+    .max-w-600 {
+        max-width: 600px;
+    }
+    .max-w-500 {
+        max-width: 500px;
+    }
+    .cursor-pointer {
+        cursor: pointer;
+    }
+</style>
 
-                <div class="form-floating mb-3">
-                    <input asp-for="@Model.City" class="form-control" aria-required="false" />
-                    <label asp-for="@Model.City">Thành phố</label>
-                    <span asp-validation-for="@Model.City" class="text-danger"></span>
-                </div>
+<div class="py-3">
+    <!-- Header -->
+    <div class="d-flex align-items-center gap-2 mb-4 border-bottom border-secondary border-opacity-10 pb-3">
+        <h1 class="h3 mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-shield-check text-info"></i>
+            <span class="gradient-text">Xác nhận thanh toán</span>
+        </h1>
+    </div>
 
-                <div class="form-floating mb-3">
-                    <input asp-for="@Model.State" class="form-control" aria-required="false" />
-                    <label asp-for="@Model.State">Quận</label>
-                    <span asp-validation-for="@Model.State" class="text-danger"></span>
-                </div>
+    <form method="Post" asp-action="PlaceOrder">
+        <!-- Hidden Coupons Bind -->
+        <input type="hidden" asp-for="CouponCode" />
+        <input type="hidden" asp-for="Discount" />
+        <input type="hidden" asp-for="TotalAfterDiscount" />
 
-                <div class="form-floating mb-3">
-                    <input asp-for="@Model.PostalCode" class="form-control" aria-required="false" />
-                    <label asp-for="@Model.PostalCode"></label>
-                    <span asp-validation-for="@Model.PostalCode" class="text-danger"></span>
-                </div>
+        <div class="row g-4">
+            <!-- Delivery Details Form (Left Column) -->
+            <div class="col-lg-6">
+                <div class="glass-panel p-4 h-100">
+                    <h3 class="h4 text-main fw-bold mb-4 d-flex align-items-center gap-2">
+                        <i class="bi bi-geo-alt text-info"></i> Địa chỉ nhận hàng
+                    </h3>
+                    
+                    <div class="form-floating mb-3">
+                        <input asp-for="@Model.StreetAddress" class="form-control" placeholder="Địa chỉ nhà, tên đường" aria-required="true" />
+                        <label asp-for="@Model.StreetAddress" class="text-muted"></label>
+                        <span asp-validation-for="@Model.StreetAddress" class="text-danger small"></span>
+                    </div>
 
-                <div class="form-floating mb-3">
-                    <input asp-for="@Model.PhoneNumber" class="form-control" aria-required="false" />
-                    <label asp-for="@Model.PhoneNumber"></label>
-                    <span asp-validation-for="@Model.PhoneNumber" class="text-danger"></span>
-                </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="@Model.City" class="form-control" placeholder="Thành phố / Tỉnh" aria-required="true" />
+                        <label asp-for="@Model.City" class="text-muted">Thành phố / Tỉnh</label>
+                        <span asp-validation-for="@Model.City" class="text-danger small"></span>
+                    </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" asp-for="@Model.RememberAddress">
-                    <label class="form-check-label" asp-for="@Model.RememberAddress">
-                       Lưu địa chỉ cho các đơn hàng tiếp theo
+                    <div class="form-floating mb-3">
+                        <input asp-for="@Model.State" class="form-control" placeholder="Quận / Huyện" aria-required="true" />
+                        <label asp-for="@Model.State" class="text-muted">Quận / Huyện</label>
+                        <span asp-validation-for="@Model.State" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="@Model.PostalCode" class="form-control" placeholder="Mã bưu điện" aria-required="false" />
+                        <label asp-for="@Model.PostalCode" class="text-muted">Mã bưu điện (ZipCode)</label>
+                        <span asp-validation-for="@Model.PostalCode" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input asp-for="@Model.PhoneNumber" class="form-control" placeholder="Số điện thoại nhận hàng" aria-required="true" />
+                        <label asp-for="@Model.PhoneNumber" class="text-muted">Số điện thoại</label>
+                        <span asp-validation-for="@Model.PhoneNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input cursor-pointer" type="checkbox" role="switch" asp-for="@Model.RememberAddress" id="RememberAddress">
+                        <label class="form-check-label cursor-pointer text-main fw-semibold small" for="RememberAddress">
+                            Lưu thông tin địa chỉ cho lần mua sau
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items & Invoice summary (Right Column) -->
+            <div class="col-lg-6">
+                <div class="glass-panel p-4 d-flex flex-column justify-content-between h-100">
+                    <div>
+                        <h3 class="h4 text-main fw-bold mb-4 d-flex align-items-center gap-2">
+                            <i class="bi bi-box-seam text-info"></i> Tóm tắt sản phẩm
+                        </h3>
+                        
+                        <div class="table-responsive" style="max-height: 250px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 12px; padding: 0.5rem;">
+                            <table class="table mb-0 table-borderless align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="small fw-bold">Sản phẩm</th>
+                                        <th class="small fw-bold text-center">S.L</th>
+                                        <th class="small fw-bold text-end">Giá</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Cart!.Items!)
+                                    {
+                                        <tr style="border-bottom: 1px solid var(--border-color);">
+                                            <td>
+                                                <a class="text-decoration-none text-main fw-bold text-truncate d-block small" 
+                                                   style="max-width: 220px;"
+                                                   asp-controller="Home" asp-action="Details" asp-route-id="@item.Product.Id">
+                                                    @item.Product.Title
+                                                </a>
+                                                <span class="text-muted small fs-7">@item.Product.Brand</span>
+                                            </td>
+                                            <td class="text-center text-main fw-semibold font-monospace small">@item.quantity</td>
+                                            <td class="text-end text-main fw-bold small">@((item.Product.Price * item.quantity).ToString("c"))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Calculation Sheet -->
+                    <div class="glass-panel p-3 mt-4" style="border: 1.5px solid rgba(168, 85, 247, 0.2); box-shadow: 0 10px 30px rgba(168, 85, 247, 0.08);">
+                        <h4 class="text-main fw-bold mb-2 small d-flex align-items-center gap-2">
+                            <i class="bi bi-receipt text-purple"></i> Chi tiết thanh toán
+                        </h4>
+                        <hr class="border-secondary border-opacity-10 my-2" />
+                        
+                        <div class="d-flex justify-content-between mb-1 small">
+                            <span class="text-muted">Tổng tạm tính:</span>
+                            <span class="text-main fw-semibold">@Model.Cart.Subtotal.ToString("c")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1 small">
+                            <span class="text-muted">VAT (@(ElectronicShopMVC.Utility.Constants.Prices.Vat * 100)%):</span>
+                            <span class="text-main fw-semibold">@Model.Cart.Vat.ToString("c")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1 small">
+                            <span class="text-muted">Phí vận chuyển:</span>
+                            <span class="text-main fw-semibold">@Model.Cart.Shipping.ToString("c")</span>
+                        </div>
+
+                        @if (Model.Discount > 0)
+                        {
+                            <div class="d-flex justify-content-between mb-1 small" style="animation: fadeIn 0.4s ease-out;">
+                                <span class="text-danger fw-semibold">Giảm giá (@Model.CouponCode):</span>
+                                <span class="text-danger fw-bold">-@Model.Discount.ToString("c")</span>
+                            </div>
+                        }
+
+                        <hr class="border-secondary border-opacity-10 my-2" />
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-main fw-bold">Tổng thanh toán:</span>
+                            <h4 class="text-info fw-extrabold mb-0">@Model.TotalAfterDiscount.ToString("c")</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selection Panel for Payment Gateways -->
+        <div class="glass-panel p-4 mt-4">
+            <h3 class="h4 text-main fw-bold mb-4 d-flex align-items-center gap-2 justify-content-center">
+                <i class="bi bi-credit-card-2-back text-info"></i> Chọn phương thức thanh toán
+            </h3>
+            
+            <div class="row g-3 max-w-600 mx-auto justify-content-center mb-4">
+                <!-- COD Option -->
+                <div class="col-md-6">
+                    <label class="w-100 cursor-pointer">
+                        <input type="radio" name="payment_mode" value="cod" class="d-none" checked onchange="togglePaymentSection('cod')" />
+                        <div class="payment-card glass-panel p-3 text-center d-flex flex-column align-items-center justify-content-center gap-2 border-2 active-payment-card" id="cod-card">
+                            <i class="bi bi-wallet2 text-primary fs-2"></i>
+                            <span class="fw-bold text-main">COD / Chuyển khoản QR</span>
+                            <span class="text-muted small" style="font-size: 0.75rem;">Chuyển QR hoặc tiền mặt khi nhận</span>
+                        </div>
+                    </label>
+                </div>
+                
+                <!-- VNPay Option -->
+                <div class="col-md-6">
+                    <label class="w-100 cursor-pointer">
+                        <input type="radio" name="payment_mode" value="vnpay" class="d-none" onchange="togglePaymentSection('vnpay')" />
+                        <div class="payment-card glass-panel p-3 text-center d-flex flex-column align-items-center justify-content-center gap-2 border-2" id="vnpay-card">
+                            <i class="bi bi-shield-fill-check text-success fs-2"></i>
+                            <span class="fw-bold text-main">Thanh toán VNPay</span>
+                            <span class="text-muted small" style="font-size: 0.75rem;">ATM, Thẻ Visa/Master, VNPAY-QR</span>
+                        </div>
                     </label>
                 </div>
             </div>
-            <div class="col-6">
-                <h3>Đơn hàng của bạn:</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Sản phẩm</th>
-                            <th>Số lượng</th>
-                            <th>Giá</th>
-                            <th>Tổng</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.Cart!.Items)
-                        {
-                            <tr>
-                                <td><a class="text-decoration-none text-black" asp-controller="Home" asp-action="Details" asp-route-id="@item.Product.Id">@item.Product.Title - @item.Product.Author</a></td>
-                                <td>@item.quantity</td>
-                                <td>@item.Product.Price.ToString("c")</td>
-                                <td>@((item.Product.Price * item.quantity).ToString("c"))</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
 
-                <div>
-                    <h2>Thanh toán:</h2>
-                    <hr />
-                    <div class="d-flex flex-columns justify-content-between">
-                        <span>Tổng tạm tính:</span><span id="subtotal">@Model.Cart.Subtotal.ToString("c")</span>
+            <!-- Panel COD / manual QR -->
+            <div id="cod-payment-details" class="payment-details-panel text-center" style="animation: fadeIn 0.4s ease-out;">
+                <div class="glass-panel p-4 max-w-500 mx-auto border-secondary border-opacity-10 shadow-sm">
+                    <h4 class="h5 text-main fw-bold mb-3">Quét mã QR để chuyển khoản nhanh</h4>
+                    <div class="my-3 d-flex justify-content-center">
+                        <img src="~/images/qr.jpg" alt="QR Code thanh toán" class="img-fluid rounded shadow-sm" style="max-width: 230px; border: 2px solid var(--border-color);" id="qr-code-image" />
                     </div>
-                    <div class="d-flex flex-columns justify-content-between">
-                        <span>VAT (@(ElectronicShopMVC.Utility.Constants.Prices.Vat * 100)%):</span><span id="vat">@Model.Cart.Vat.ToString("c")</span>
+                    <p class="text-muted mb-4 small">Bạn có thể quét QR để thanh toán trước, hoặc thanh toán bằng tiền mặt khi nhận hàng.</p>
+                    
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a class="btn btn-secondary px-4 d-flex align-items-center gap-2" asp-action="Index">
+                            <i class="bi bi-arrow-left"></i> Quay lại giỏ hàng
+                        </a>
+                        <button type="submit" class="btn btn-primary px-5 d-flex align-items-center gap-2" id="place-order-btn">
+                            <span>XÁC NHẬN ĐẶT HÀNG</span>
+                            <i class="bi bi-check-circle-fill"></i>
+                        </button>
                     </div>
-                    <div class="d-flex flex-columns justify-content-between">
-                        <span>Phí ship:</span><span id="shipping">@Model.Cart.Shipping.ToString("c")</span>
+                </div>
+            </div>
+
+            <!-- Panel VNPay Online Gateway -->
+            <div id="vnpay-payment-details" class="payment-details-panel d-none text-center" style="animation: fadeIn 0.4s ease-out;">
+                <div class="glass-panel p-4 max-w-500 mx-auto border-secondary border-opacity-10 shadow-sm">
+                    <h4 class="h5 text-main fw-bold mb-3">Cổng thanh toán điện tử VNPay</h4>
+                    <div class="my-4 py-2 d-flex justify-content-center align-items-center gap-3 text-muted">
+                        <i class="bi bi-credit-card-2-front-fill text-info" style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.35));"></i>
+                        <span class="fs-2 fw-light">&amp;</span>
+                        <i class="bi bi-qr-code-scan text-purple" style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.35));"></i>
                     </div>
-                    <div class="d-flex flex-columns justify-content-between">
-                        <span class="fw-bold">Tổng:</span><span id="total">@Model.Cart.Total.ToString("c")</span>
+                    <p class="text-muted mb-4 small">Nhấp nút dưới để chuyển hướng an toàn tới VNPay. Giao dịch được mã hóa và bảo mật hoàn toàn.</p>
+                    
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a class="btn btn-secondary px-4 d-flex align-items-center gap-2" asp-action="Index">
+                            <i class="bi bi-arrow-left"></i> Quay lại giỏ hàng
+                        </a>
+                        <button type="submit" class="btn btn-success px-5 d-flex align-items-center gap-2" asp-action="VNPayCheckout" id="vnpay-place-order-btn">
+                            <span>THANH TOÁN QUA VNPAY</span>
+                            <i class="bi bi-arrow-right-circle-fill"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="text-center">
-            <a class="btn btn-secondary mt-5" asp-action="Index">
-                Quay về giỏ hàng
-            </a>
+    </form>
+</div>
 
-            <div class="mt-5">
-                <h3>Quét mã QR để thanh toán:</h3>
-                <div class="my-4 d-flex justify-content-center">
-                    <img src="~/images/qr.jpg" alt="QR Code thanh toán" class="img-fluid" style="max-width: 300px; border: 2px solid #ddd; border-radius: 8px;" id="qr-code-image" />
-                </div>
-                <p class="text-muted mb-3">Vui lòng quét mã QR và thanh toán, sau đó nhấn nút xác nhận bên dưới</p>
-                <button type="submit" class="btn btn-primary" id="place-order-btn">
-                    Đã thanh toán - Xác nhận đơn hàng
-                </button>
-            </div>
-            
-            <div class="mt-5">
-                <h3>Quét mã QR để thanh toán VNPay:</h3>
-                <div class="my-4 d-flex justify-content-center">
-                    <img src="~/images/qr.jpg" alt="QR Code thanh toán VNPay" class="img-fluid" style="max-width: 300px; border: 2px solid #ddd; border-radius: 8px;" id="vnpay-qr-code-image" />
-                </div>
-                <p class="text-muted mb-3">Vui lòng quét mã QR và thanh toán, sau đó nhấn nút xác nhận bên dưới</p>
-                <button type="submit" class="btn btn-success" id="vnpay-place-order-btn">
-                    Đã thanh toán VNPay - Xác nhận đơn hàng
-                </button>
-            </div>
-        </div>
-
-    </div>
-</form>
+<script>
+    function togglePaymentSection(mode) {
+        const codPanel = document.getElementById('cod-payment-details');
+        const vnpayPanel = document.getElementById('vnpay-payment-details');
+        const codCard = document.getElementById('cod-card');
+        const vnpayCard = document.getElementById('vnpay-card');
+        
+        if (mode === 'cod') {
+            codPanel.classList.remove('d-none');
+            vnpayPanel.classList.add('d-none');
+            codCard.classList.add('active-payment-card');
+            vnpayCard.classList.remove('active-payment-card');
+        } else {
+            codPanel.classList.add('d-none');
+            vnpayPanel.classList.remove('d-none');
+            codCard.classList.remove('active-payment-card');
+            vnpayCard.classList.add('active-payment-card');
+        }
+    }
+</script>

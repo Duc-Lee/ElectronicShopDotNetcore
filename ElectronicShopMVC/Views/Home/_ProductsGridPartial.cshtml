@@ -1,59 +1,78 @@
-﻿@model IEnumerable<Product>
+@model IEnumerable<Product>
 
-<div class="row pb-3 mt-3">
+<div class="row pb-3 mt-1 align-items-stretch">
     @foreach (var product in Model)
     {
-        <div class="col-lg-3 col-sm-6">
-            <div class="row p-2">
-                <div class="col-12 p-1">
-                    <div class="card border-0 p-3 shadow border-top border-5 rounded">
-                        <div class="position-absolute d-flex flex-column ms-2 mt-2">
-                            @if (product.IsNew)
-                            {
-                                <span class="badge text-bg-primary">Mới</span>
-                            }
-                            @if (product.IsBestseller)
-                            {
-                                <span class="badge text-bg-danger mt-2">Bán chạy</span>
-                            }
-                            @if (product.IsSpecialOffer)
-                            {
-                                <span class="badge text-bg-success mt-2 ">Ưu đãi đặc biệt</span>
-                            }
-                        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4 d-flex product-card-item"
+             data-title="@product.Title.ToLower()"
+             data-brand="@(product.Brand?.ToLower() ?? "")"
+             data-new="@product.IsNew.ToString().ToLower()"
+             data-bestseller="@product.IsBestseller.ToString().ToLower()"
+             data-offer="@product.IsSpecialOffer.ToString().ToLower()"
+             style="transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+            <div class="card product-card w-100 position-relative d-flex flex-column">
+                <!-- Badges Container -->
+                <div class="position-absolute d-flex flex-column gap-1 ms-2 mt-2 z-3" style="left: 10px; top: 10px;">
+                    @if (product.IsNew)
+                    {
+                        <span class="badge text-bg-primary"><i class="bi bi-patch-check"></i> Mới</span>
+                    }
+                    @if (product.IsBestseller)
+                    {
+                        <span class="badge text-bg-danger"><i class="bi bi-fire"></i> Bán chạy</span>
+                    }
+                    @if (product.IsSpecialOffer)
+                    {
+                        <span class="badge text-bg-success"><i class="bi bi-gift"></i> Ưu đãi</span>
+                    }
+                </div>
 
-                        <img src="@product.ImageUrl" class="card-img-top" />
+                <!-- Product Image container -->
+                <div class="product-img-container d-flex align-items-center justify-content-center" style="height: 180px; overflow: hidden; border-radius: 12px;">
+                    @if(string.IsNullOrEmpty(product.ImageUrl))
+                    {
+                        <img src="https://placehold.co/400x300/1e293b/f8fafc?text=E-Shop" class="img-fluid rounded" style="object-fit: contain; max-height: 100%;" />
+                    }
+                    else
+                    {
+                        <img src="@product.ImageUrl" class="img-fluid rounded" style="object-fit: contain; max-height: 100%; width: 100%; transition: transform 0.4s ease;" />
+                    }
+                </div>
 
-
-
-                        <div class="card-body pb-0">
-                            <div class="pl-1">
-                                <p class="card-title mb-0 text-black opacity-75 text-center fs-5 text-truncate">@product.Title</p>
-                                <p class="card-title mb-0 text-secondary text-center fs-6">@product.Author</p>
-                            </div>
-                            <div class="pl-1">
-                                <p class="text-dark text-opacity-75 text-center mb-0 fs-5 mb-3"><strong>@product.Price.ToString("c")</strong></p>
-                            </div>
-                        </div>
-                        @if (User!.Identity!.IsAuthenticated)
-                        {
-                            <div class="d-flex flex-row">
-                                <button class="btn btn-secondary border-0 form-control w-25 me-1 shopping-cart-btn" data-id="@product.Id"><i class="bi bi-cart"></i></button>
-                                <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary border-0 form-control">Chi tiết</a>
-                            </div>
-
-                        }
-                        else
-                        {
-                            <div class="d-flex flex-row">
-                                <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary border-0 form-control">Chi tiết</a>
-                            </div>
-
-                        }
+                <!-- Product Info -->
+                <div class="card-body pb-0 d-flex flex-column flex-grow-1 px-1">
+                    <div class="mb-2 mt-2 text-center">
+                        <p class="card-title mb-0 text-main fw-bold fs-5 text-truncate" title="@product.Title">@product.Title</p>
+                        <p class="card-subtitle mb-0 text-muted small mt-1">@product.Brand</p>
                     </div>
+                    <div class="mt-auto pt-2 text-center">
+                        <h4 class="text-info fw-bold mb-0">@product.Price.ToString("c")</h4>
+                    </div>
+                </div>
+
+                <!-- Card Footer Actions -->
+                <div class="card-footer bg-transparent border-0 p-0 mt-3">
+                    @if (User!.Identity!.IsAuthenticated)
+                    {
+                        <div class="d-flex flex-row gap-2 mt-2">
+                            <button class="btn btn-secondary flex-shrink-0 px-3 shopping-cart-btn" data-id="@product.Id" title="Thêm vào giỏ hàng">
+                                <i class="bi bi-cart-plus fs-5"></i>
+                            </button>
+                            <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center gap-1">
+                                <span>Chi tiết</span><i class="bi bi-chevron-right small"></i>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-row mt-2">
+                            <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-1">
+                                <span>Xem chi tiết</span><i class="bi bi-chevron-right small"></i>
+                            </a>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     }
 </div>
-@await Component.InvokeAsync("Footer")

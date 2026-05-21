@@ -1,0 +1,191 @@
+@model List<ElectronicShopMVC.Model.Order>
+@{
+    ViewData["Title"] = "Quản lý Đơn hàng - Admin";
+    var activeStatus = ViewBag.ActiveStatus as string ?? "All";
+}
+
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-secondary border-opacity-10 pb-3">
+        <h2 class="h3 mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-receipt text-primary"></i>
+            <span class="gradient-text">Quản lý Đơn hàng</span>
+        </h2>
+        <span class="text-muted fs-6">Hệ thống xử lý và đối soát hóa đơn</span>
+    </div>
+
+    <!-- Status Filters Tabs -->
+    <div class="glass-panel p-3 mb-4">
+        <ul class="nav nav-pills nav-fill flex-column flex-sm-row gap-2" id="orderStatusTabs">
+            <li class="nav-item">
+                <a class="nav-link py-2 px-3 fw-bold @(activeStatus == "All" ? "active btn-primary text-white" : "btn-secondary text-main")" 
+                   asp-area="Admin" asp-controller="Order" asp-action="Index" asp-route-status="All">
+                    <i class="bi bi-list-task me-1"></i>Tất cả
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-2 px-3 fw-bold @(activeStatus == "Pending" ? "active btn-primary text-white" : "btn-secondary text-main")" 
+                   asp-area="Admin" asp-controller="Order" asp-action="Index" asp-route-status="Pending">
+                    <i class="bi bi-clock me-1 text-warning"></i>Chờ xử lý
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-2 px-3 fw-bold @(activeStatus == "Approved" ? "active btn-primary text-white" : "btn-secondary text-main")" 
+                   asp-area="Admin" asp-controller="Order" asp-action="Index" asp-route-status="Approved">
+                    <i class="bi bi-check-circle me-1 text-info"></i>Đã duyệt
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-2 px-3 fw-bold @(activeStatus == "Processing" ? "active btn-primary text-white" : "btn-secondary text-main")" 
+                   asp-area="Admin" asp-controller="Order" asp-action="Index" asp-route-status="Processing">
+                    <i class="bi bi-gear me-1 text-primary"></i>Đang chuẩn bị
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-2 px-3 fw-bold @(activeStatus == "Completed" ? "active btn-primary text-white" : "btn-secondary text-main")" 
+                   asp-area="Admin" asp-controller="Order" asp-action="Index" asp-route-status="Completed">
+                    <i class="bi bi-patch-check me-1 text-success"></i>Hoàn thành
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-2 px-3 fw-bold @(activeStatus == "Cancelled" ? "active btn-primary text-white" : "btn-secondary text-main")" 
+                   asp-area="Admin" asp-controller="Order" asp-action="Index" asp-route-status="Cancelled">
+                    <i class="bi bi-x-circle me-1 text-danger"></i>Đã hủy
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Orders Table Card -->
+    <div class="glass-panel p-4">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-inbox text-muted opacity-40 mb-3" style="font-size: 4rem;"></i>
+                <h5 class="fw-bold text-muted">Không tìm thấy đơn hàng nào ở trạng thái này</h5>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="tblOrders">
+                    <thead>
+                        <tr class="border-bottom border-secondary border-opacity-10">
+                            <th>Mã Đơn</th>
+                            <th>Khách Hàng</th>
+                            <th>Ngày Đặt</th>
+                            <th>Số SP</th>
+                            <th class="text-end">Thanh Toán</th>
+                            <th>Trạng Thái</th>
+                            <th>Giao Hàng</th>
+                            <th class="text-end">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            var statusBadgeClass = order.Status switch
+                            {
+                                ElectronicShopMVC.Utility.Constants.OrderStatus.Pending => "bg-warning text-dark",
+                                ElectronicShopMVC.Utility.Constants.OrderStatus.Processing => "text-bg-primary",
+                                ElectronicShopMVC.Utility.Constants.OrderStatus.Approved => "bg-info text-white",
+                                ElectronicShopMVC.Utility.Constants.OrderStatus.Completed => "text-bg-success",
+                                ElectronicShopMVC.Utility.Constants.OrderStatus.Cancelled => "text-bg-danger",
+                                _ => "bg-secondary text-white"
+                            };
+
+                            var statusText = order.Status switch
+                            {
+                                ElectronicShopMVC.Utility.Constants.OrderStatus.Pending => "Chờ xử lý",
+                                ElectronicShopMVC.Utility.Constants.OrderStatus.Processing => "Đang chuẩn bị",
+                                ElectronicShopMVC.Utility.Constants.OrderStatus.Approved => "Đã duyệt",
+                                ElectronicShopMVC.Utility.Constants.OrderStatus.Completed => "Hoàn thành",
+                                ElectronicShopMVC.Utility.Constants.OrderStatus.Cancelled => "Đã hủy",
+                                _ => order.Status.ToString()
+                            };
+
+                            var paymentBadgeClass = order.PaymentStatus switch
+                            {
+                                "Approved" => "badge text-bg-success",
+                                "Pending" => "badge bg-warning text-dark",
+                                "Failed" => "badge text-bg-danger",
+                                _ => "badge bg-secondary text-white"
+                            };
+
+                            var paymentText = order.PaymentStatus switch
+                            {
+                                "Approved" => "Đã thanh toán",
+                                "Pending" => "Chờ xử lý",
+                                "Failed" => "Thất bại",
+                                _ => order.PaymentStatus
+                            };
+
+                            <tr>
+                                <td>
+                                    <span class="font-monospace fw-bold text-main" style="font-size: 0.85rem;">
+                                        @order.OrderId?.Substring(0, Math.Min(order.OrderId.Length, 15))...
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-main">@order.User?.Name</div>
+                                    <div class="text-muted small">@order.User?.Email</div>
+                                </td>
+                                <td class="text-nowrap small text-muted">
+                                    <i class="bi bi-calendar-event me-1"></i>@order.Date.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                                <td class="fw-semibold text-center text-main">
+                                    @order.Items.Sum(x => x.Quantity)
+                                </td>
+                                <td class="text-end fw-extrabold gradient-text-accent text-nowrap">
+                                    @order.Total.ToString("N0")đ
+                                </td>
+                                <td>
+                                    <span class="badge @statusBadgeClass" style="font-size: 0.7rem;">
+                                        @statusText
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (order.FulfillmentStatus == "Delivered")
+                                    {
+                                        <span class="badge text-bg-success"><i class="bi bi-truck me-1"></i>Đã giao</span>
+                                    }
+                                    else if (order.FulfillmentStatus == "Cancelled")
+                                    {
+                                        <span class="badge text-bg-danger"><i class="bi bi-x-circle me-1"></i>Đã hủy</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge text-bg-primary"><i class="bi bi-box-seam me-1"></i>Đang chuẩn bị</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-area="Admin" asp-controller="Order" asp-action="Details" asp-route-id="@order.Id" class="btn btn-primary btn-sm py-2">
+                                        <i class="bi bi-gear-fill me-1"></i>Duyệt đơn
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            if ($('#tblOrders').length) {
+                $('#tblOrders').DataTable({
+                    "language": {
+                        "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                    },
+                    "order": [], // Keep server side sorting
+                    "pageLength": 10,
+                    "lengthMenu": [5, 10, 20, 50],
+                    "dom": '<"d-flex flex-wrap justify-content-between align-items-center mb-3"<"d-flex align-items-center"l><"d-flex align-items-center"f>>rt<"d-flex flex-wrap justify-content-between align-items-center mt-3"ip>'
+                });
+            }
+        });
+    </script>
+}

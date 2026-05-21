@@ -1,4 +1,4 @@
-﻿using ElectronicShopMVC.DataAccess.Repository.IRepository;
+using ElectronicShopMVC.DataAccess.Repository.IRepository;
 using ElectronicShopMVC.Model.ViewModels;
 using ElectronicShopMVC.Model;
 using ElectronicShopMVC.Services;
@@ -61,7 +61,7 @@ namespace ElectronicShopMVC.Controllers
             }
         }
 
-        public async Task<IActionResult> Summary()
+        public async Task<IActionResult> Summary(string? couponCode)
         {
             try
             {
@@ -89,8 +89,71 @@ namespace ElectronicShopMVC.Controllers
                     City = user.City ?? string.Empty,
                     State = user.State ?? string.Empty,
                     PostalCode = user.PostalCode ?? string.Empty,
-                    PhoneNumber = user.PhoneNumber ?? string.Empty
+                    PhoneNumber = user.PhoneNumber ?? string.Empty,
+                    CouponCode = couponCode
                 };
+
+                // Backend voucher validation and pricing calculation
+                if (summaryVM.Cart != null && !string.IsNullOrEmpty(couponCode))
+                {
+                    couponCode = couponCode.Trim().ToUpper();
+                    decimal subtotal = summaryVM.Cart.Subtotal;
+                    decimal shipping = summaryVM.Cart.Shipping;
+                    decimal discount = 0;
+
+                    var voucher = _unitOfWork.Voucher.Get(v => v.Code == couponCode && v.IsActive && !v.IsDeleted);
+                    if (voucher != null)
+                    {
+                        bool isValid = true;
+                        if (DateTime.UtcNow < voucher.StartDate || DateTime.UtcNow > voucher.EndDate)
+                        {
+                            isValid = false;
+                        }
+                        if (voucher.MaxUses > 0 && voucher.UsedCount >= voucher.MaxUses)
+                        {
+                            isValid = false;
+                        }
+                        if (subtotal < voucher.MinOrderAmount)
+                        {
+                            isValid = false;
+                        }
+
+                        if (isValid)
+                        {
+                            if (string.Equals(voucher.DiscountType, "Percentage", StringComparison.OrdinalIgnoreCase))
+                            {
+                                discount = subtotal * (voucher.DiscountValue / 100m);
+                                if (voucher.MaxDiscountAmount.HasValue)
+                                {
+                                    discount = Math.Min(discount, voucher.MaxDiscountAmount.Value);
+                                }
+                            }
+                            else if (string.Equals(voucher.DiscountType, "FixedAmount", StringComparison.OrdinalIgnoreCase))
+                            {
+                                discount = Math.Min(subtotal, voucher.DiscountValue);
+                            }
+                            else if (string.Equals(voucher.DiscountType, "FreeShipping", StringComparison.OrdinalIgnoreCase))
+                            {
+                                discount = shipping;
+                            }
+                        }
+                        else
+                        {
+                            TempData["error"] = "Mã giảm giá đã hết hạn hoặc không đủ điều kiện sử dụng.";
+                        }
+                    }
+                    else
+                    {
+                        TempData["error"] = "Mã giảm giá không hợp lệ hoặc không tồn tại.";
+                    }
+
+                    summaryVM.Discount = discount;
+                    summaryVM.TotalAfterDiscount = Math.Max(0, summaryVM.Cart.Total - discount);
+                }
+                else
+                {
+                    summaryVM.TotalAfterDiscount = summaryVM.Cart?.Total ?? 0;
+                }
                 
                 return View(summaryVM);
             }
@@ -101,7 +164,7 @@ namespace ElectronicShopMVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
-
+ 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlaceOrder(SummaryVM summaryVM)
@@ -147,13 +210,15 @@ namespace ElectronicShopMVC.Controllers
                 }
 
                 summaryVM.Cart = cart;
+                summaryVM.PaymentMethod = "COD";
+                summaryVM.PaymentStatus = "Pending";
                 var result = _cartService.PlaceOrder(summaryVM);
                 
                 if (!result.Success)
                 {
                     _logger.LogWarning("Place order failed: {Message}", result.Message);
                     TempData["error"] = result.Message ?? "Lỗi khi đặt hàng";
-                    return RedirectToAction(nameof(Summary));
+                    return RedirectToAction(nameof(Summary), new { couponCode = summaryVM.CouponCode });
                 }
 
                 TempData["success"] = "Đơn hàng đã được đặt thành công!";
@@ -164,10 +229,10 @@ namespace ElectronicShopMVC.Controllers
             {
                 _logger.LogError(ex, "Error placing order");
                 TempData["error"] = "Đã xảy ra lỗi khi đặt hàng.";
-                return RedirectToAction(nameof(Summary));
+                return RedirectToAction(nameof(Summary), new { couponCode = summaryVM?.CouponCode });
             }
         }
-
+ 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VNPayCheckout(SummaryVM summaryVM)
@@ -190,11 +255,66 @@ namespace ElectronicShopMVC.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
+                // Compute exact discounted total for VNPay payment gateway dynamically from DB
                 decimal totalAmount = cart.Total;
+                if (!string.IsNullOrEmpty(summaryVM.CouponCode))
+                {
+                    string code = summaryVM.CouponCode.Trim().ToUpper();
+                    decimal subtotal = cart.Subtotal;
+                    decimal shipping = cart.Shipping;
+                    decimal discount = 0;
+
+                    var voucher = _unitOfWork.Voucher.Get(v => v.Code == code && v.IsActive && !v.IsDeleted);
+                    if (voucher != null)
+                    {
+                        bool isValid = true;
+                        if (DateTime.UtcNow < voucher.StartDate || DateTime.UtcNow > voucher.EndDate)
+                        {
+                            isValid = false;
+                        }
+                        if (voucher.MaxUses > 0 && voucher.UsedCount >= voucher.MaxUses)
+                        {
+                            isValid = false;
+                        }
+                        if (subtotal < voucher.MinOrderAmount)
+                        {
+                            isValid = false;
+                        }
+
+                        if (isValid)
+                        {
+                            if (string.Equals(voucher.DiscountType, "Percentage", StringComparison.OrdinalIgnoreCase))
+                            {
+                                discount = subtotal * (voucher.DiscountValue / 100m);
+                                if (voucher.MaxDiscountAmount.HasValue)
+                                {
+                                    discount = Math.Min(discount, voucher.MaxDiscountAmount.Value);
+                                }
+                            }
+                            else if (string.Equals(voucher.DiscountType, "FixedAmount", StringComparison.OrdinalIgnoreCase))
+                            {
+                                discount = Math.Min(subtotal, voucher.DiscountValue);
+                            }
+                            else if (string.Equals(voucher.DiscountType, "FreeShipping", StringComparison.OrdinalIgnoreCase))
+                            {
+                                discount = shipping;
+                            }
+                        }
+                    }
+                    totalAmount = Math.Max(0, totalAmount - discount);
+                }
+
                 string orderId = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
                 
+                // Cache complete checkout parameters and coupon details in the session
                 HttpContext.Session.SetString("PendingOrderId", orderId);
                 HttpContext.Session.SetString("PendingUserId", userId);
+                HttpContext.Session.SetString("PendingStreetAddress", summaryVM.StreetAddress ?? string.Empty);
+                HttpContext.Session.SetString("PendingCity", summaryVM.City ?? string.Empty);
+                HttpContext.Session.SetString("PendingState", summaryVM.State ?? string.Empty);
+                HttpContext.Session.SetString("PendingPostalCode", summaryVM.PostalCode ?? string.Empty);
+                HttpContext.Session.SetString("PendingPhoneNumber", summaryVM.PhoneNumber ?? string.Empty);
+                HttpContext.Session.SetString("PendingCouponCode", summaryVM.CouponCode ?? string.Empty);
 
                 string paymentUrl = _vnPayService.CreatePaymentUrl(HttpContext, totalAmount, orderId, "Checkout");
                 _logger.LogInformation("VNPay checkout initiated. OrderId: {OrderId}, UserId: {UserId}, Amount: {Amount}", 
@@ -209,7 +329,7 @@ namespace ElectronicShopMVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
-
+ 
         public async Task<IActionResult> PaymentReturn()
         {
             try
@@ -218,29 +338,51 @@ namespace ElectronicShopMVC.Controllers
                 string vnp_ResponseCode = vnpayData["vnp_ResponseCode"].ToString();
                 string pendingOrderId = HttpContext.Session.GetString("PendingOrderId") ?? string.Empty;
                 string userId = HttpContext.Session.GetString("PendingUserId") ?? string.Empty;
-
+ 
                 if (string.IsNullOrEmpty(pendingOrderId) || string.IsNullOrEmpty(userId))
                 {
                     _logger.LogWarning("Missing session data in PaymentReturn");
                     TempData["error"] = "Không tìm thấy đơn hàng.";
                     return RedirectToAction(nameof(Summary));
                 }
-
+ 
                 var cart = await Task.Run(() => _unitOfWork.ShoppingCart.GetCart(userId));
-
+ 
                 if (vnp_ResponseCode == "00") // Thành công
                 {
                     if (cart != null && cart.Items.Any())
                     {
-                        var summaryVM = new SummaryVM { Cart = cart };
-                        var result = _cartService.PlaceOrder(summaryVM);
+                        // Restore complete shipping address and coupon from session
+                        var summaryVM = new SummaryVM 
+                        { 
+                            Cart = cart,
+                            StreetAddress = HttpContext.Session.GetString("PendingStreetAddress") ?? string.Empty,
+                            City = HttpContext.Session.GetString("PendingCity") ?? string.Empty,
+                            State = HttpContext.Session.GetString("PendingState") ?? string.Empty,
+                            PostalCode = HttpContext.Session.GetString("PendingPostalCode") ?? string.Empty,
+                            PhoneNumber = HttpContext.Session.GetString("PendingPhoneNumber") ?? string.Empty,
+                            CouponCode = HttpContext.Session.GetString("PendingCouponCode") ?? string.Empty,
+                            PaymentMethod = "VNPay",
+                            PaymentStatus = "Approved",
+                            TransactionReference = vnpayData["vnp_TransactionNo"].ToString()
+                        };
 
+                        var result = _cartService.PlaceOrder(summaryVM);
+ 
                         if (result.Success)
                         {
                             await Task.Run(() => _unitOfWork.ShoppingCart.ClearCart(userId));
+                            
+                            // Clean up session variables
                             HttpContext.Session.Remove("PendingOrderId");
                             HttpContext.Session.Remove("PendingUserId");
-
+                            HttpContext.Session.Remove("PendingStreetAddress");
+                            HttpContext.Session.Remove("PendingCity");
+                            HttpContext.Session.Remove("PendingState");
+                            HttpContext.Session.Remove("PendingPostalCode");
+                            HttpContext.Session.Remove("PendingPhoneNumber");
+                            HttpContext.Session.Remove("PendingCouponCode");
+ 
                             _logger.LogInformation("Payment successful and order placed. OrderId: {OrderId}, UserId: {UserId}", 
                                 pendingOrderId, userId);
                             
@@ -263,8 +405,9 @@ namespace ElectronicShopMVC.Controllers
                         vnp_ResponseCode, pendingOrderId);
                     TempData["error"] = "Thanh toán thất bại hoặc bị hủy!";
                 }
-
-                return RedirectToAction(nameof(Summary));
+ 
+                string restoredCoupon = HttpContext.Session.GetString("PendingCouponCode") ?? string.Empty;
+                return RedirectToAction(nameof(Summary), new { couponCode = restoredCoupon });
             }
             catch (Exception ex)
             {

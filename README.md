@@ -93,10 +93,80 @@ Sơ đồ minh họa mẫu thiết kế Model-View-Controller được áp dụn
 
 ## 5. Thiết kế Cơ sở dữ liệu và Cấu trúc Code
 
-### 5.1. Sơ đồ ERD (Entity-Relationship Diagram)
-Lược đồ quan hệ thực thể (ERD) định nghĩa cấu trúc logic của cơ sở dữ liệu. Sơ đồ này trực quan hóa các bảng chính như `Products`, `Categories`, `Orders`, và `Users`, cùng với các thuộc tính (cột) của chúng và các mối quan hệ (một-nhiều, nhiều-nhiều) giữa chúng. Ví dụ, nó cho thấy một `Category` có thể có nhiều `Products`.
+### 5.1. Sơ đồ ERD Chi tiết (Entity-Relationship Diagram)
+Lược đồ quan hệ thực thể (ERD) chi tiết hóa cấu trúc dữ liệu của hệ thống, bao gồm các thuộc tính, kiểu dữ liệu và các mối quan hệ ràng buộc giữa các bảng.
 
-![Sơ đồ ERD](Image/image_readme/erd.png)
+```mermaid
+erDiagram
+    APPLICATION_USER ||--o{ ORDER : "đặt hàng"
+    APPLICATION_USER ||--o{ SHOPPING_CART_ITEM : "có giỏ hàng"
+    CATEGORY ||--o{ PRODUCT : "phân loại"
+    PRODUCT ||--o{ SHOPPING_CART_ITEM : "trong giỏ"
+    ORDER ||--|{ ORDER_ITEM : "chi tiết đơn hàng"
+    PRODUCT ||--o{ ORDER_ITEM : "sản phẩm bán"
+
+    APPLICATION_USER {
+        string Id PK
+        string UserName
+        string Email
+        string Name
+        string StreetAddress
+        string City
+        string PostalCode
+        string PhoneNumber
+    }
+
+    PRODUCT {
+        int Id PK
+        string Title
+        string ISBN "SKU"
+        string Author "Hãng"
+        decimal Price "Giá (1-50)"
+        decimal Price50 "Giá (50+)"
+        decimal Price100 "Giá (100+)"
+        int CategoryId FK
+        string ImageUrl
+        int Stock
+    }
+
+    CATEGORY {
+        int Id PK
+        string Name
+        int DisplayOrder
+    }
+
+    SHOPPING_CART_ITEM {
+        int Id PK
+        string UserId FK
+        int ProductId FK
+        int Quantity
+    }
+
+    ORDER {
+        int Id PK
+        string OrderId "Mã ĐH"
+        string UserId FK
+        datetime Date
+        int Status "Enum"
+        decimal Total
+        string StreetAddress
+        string City
+        string PhoneNumber
+    }
+
+    ORDER_ITEM {
+        int Id PK
+        int OrderId FK
+        int ProductId FK
+        int Quantity
+        decimal Price
+    }
+```
+
+*   **ApplicationUser**: Mở rộng từ ASP.NET Identity, lưu trữ thông tin giao hàng mặc định của khách hàng.
+*   **Product**: Quản lý thông tin linh kiện với cơ chế giá linh hoạt theo số lượng và theo dõi tồn kho.
+*   **Order & OrderItem**: Lưu trữ lịch sử giao dịch, snapshot giá tại thời điểm mua để đảm bảo tính nhất quán của báo cáo tài chính.
+
 
 ### 5.2. Sơ đồ Lớp (Class Diagram)
 Sơ đồ lớp thể hiện cấu trúc tĩnh của hệ thống ở mức mã nguồn. Nó chi tiết hóa các lớp trong project như `ProductRepository`, `CartService`, `HomeController`, các thuộc tính và phương thức của chúng. Sơ đồ này cho thấy mối quan hệ kế thừa, giao diện, và liên kết giữa các lớp, giúp lập trình viên hiểu rõ cấu trúc code.
@@ -129,8 +199,8 @@ Sơ đồ lớp thể hiện cấu trúc tĩnh của hệ thống ở mức mã 
 4.  **Chạy ứng dụng** bằng Visual Studio (F5) hoặc `dotnet run` (chi tiết ở mục 9).
 
 ### Tài khoản Admin mặc định
-*   **Email:** `admin@example.com`
-*   **Mật khẩu:** `Admin@123`
+*   **Email:** `leduc28032005@gmail.com`
+*   **Mật khẩu:** `AnhducyeuThanh@1`
 
 ## 8. Triển khai với Docker
 

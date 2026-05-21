@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,10 +20,10 @@ namespace ElectronicShopMVC.Model
         [Required]
         [Display(Name = "SKU")]
         [JsonPropertyName("isbn")]
-        public string? ISBN { get; set; }
+        public string? SKU { get; set; }
         [Required]
-        [Display(Name = "Hãng")]
-        public string? Author { get; set; }
+        [Display(Name = "Thương hiệu")]
+        public string? Brand { get; set; }
 
         [Required]
         [Display(Name = "Giá từ 1 - 50")]
@@ -66,5 +66,14 @@ namespace ElectronicShopMVC.Model
         [Display(Name = "Tồn")]
         public int Stock { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        [MaxLength(100)]
+        public string? CreatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        
+        [MaxLength(100)]
+        public string? UpdatedBy { get; set; }
     }
 }

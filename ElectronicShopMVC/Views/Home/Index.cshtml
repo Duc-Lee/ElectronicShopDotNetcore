@@ -1,10 +1,176 @@
-﻿
+
 @model IEnumerable<Product>
 @{
     ViewData["Title"] = "Trang chủ";
 }
 
-<div>
-    <h1>Danh sách sản phẩm</h1>
+<!-- Hero Section -->
+<div class="glass-panel p-5 mb-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(241, 245, 249, 0.85) 100%);">
+    <div class="row align-items-center">
+        <div class="col-md-7 z-1">
+            <span class="badge text-bg-primary mb-3">
+                <i class="bi bi-stars me-1"></i> Chào mừng đến với E-Shop
+            </span>
+            <h1 class="display-4 fw-extrabold mb-3">
+                <span class="gradient-text">Khám Phá Thế Giới</span><br/>
+                <span class="gradient-text-accent">Công Nghệ Đỉnh Cao</span>
+            </h1>
+            <p class="fs-5 text-muted mb-4" style="max-width: 550px; line-height: 1.6;">
+                Trải nghiệm không gian mua sắm thiết bị điện tử, laptop và phụ kiện cao cấp chính hãng. Nâng tầm cuộc sống số của bạn ngay hôm nay!
+            </p>
+            <div class="d-flex gap-3 mb-4">
+                <a href="#danh-sach-san-pham" class="btn btn-primary px-4 py-2">
+                    <i class="bi bi-bag-fill me-2"></i>Mua sắm ngay
+                </a>
+                <a href="#danh-sach-san-pham" class="btn btn-secondary px-4 py-2">
+                    Xem sản phẩm
+                </a>
+            </div>
+        </div>
+        <div class="col-md-5 text-center d-none d-md-block z-1">
+            <div class="position-relative d-inline-block">
+                <!-- A futuristic abstract glowing ornament -->
+                <div class="rounded-circle bg-info opacity-10 position-absolute" style="width: 250px; height: 250px; filter: blur(50px); top: -20px; left: -20px;"></div>
+                <div class="rounded-circle bg-primary opacity-10 position-absolute" style="width: 200px; height: 200px; filter: blur(40px); bottom: -20px; right: -20px;"></div>
+                <i class="bi bi-laptop-fill text-info opacity-75" style="font-size: 10rem; filter: drop-shadow(0 0 25px rgba(6, 182, 212, 0.4));"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- UI/UX Highlight Cards at the bottom of Hero -->
+    <div class="row g-3 mt-3 border-top border-dark border-opacity-10 pt-4 z-1 position-relative">
+        <div class="col-md-4">
+            <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-white bg-opacity-80 border border-dark border-opacity-5 shadow-sm">
+                <div class="rounded-3 bg-info bg-opacity-10 p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; box-shadow: var(--glow-cyan);">
+                    <i class="bi bi-patch-check-fill text-info fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">100% Chính Hãng</h6>
+                    <span class="text-muted small">Cam kết hoàn tiền gấp đôi nếu giả</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-white bg-opacity-80 border border-dark border-opacity-5 shadow-sm">
+                <div class="rounded-3 bg-rose bg-opacity-10 p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; box-shadow: var(--glow-rose);">
+                    <i class="bi bi-truck text-rose fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">Miễn Phí Giao Hàng</h6>
+                    <span class="text-muted small">Cho đơn hàng từ 1.000.000đ</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-white bg-opacity-80 border border-dark border-opacity-5 shadow-sm">
+                <div class="rounded-3 bg-emerald bg-opacity-10 p-2 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; box-shadow: var(--glow-emerald);">
+                    <i class="bi bi-shield-fill-check text-emerald fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">Bảo Hành 1-Đổi-1</h6>
+                    <span class="text-muted small">Trong 30 ngày nếu phát sinh lỗi</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="danh-sach-san-pham" class="pt-3">
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-secondary border-opacity-10 pb-3">
+        <h2 class="h3 mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-lightning-charge-fill text-warning"></i>
+            <span class="gradient-text">Danh sách sản phẩm</span>
+        </h2>
+        <span class="text-muted fs-6" id="products-count-badge">Hiển thị @Model.Count() sản phẩm</span>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="row mb-4 g-3 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" id="live-search" class="form-control border-start-0 ps-0 text-main" placeholder="Tìm kiếm theo tên, thương hiệu sản phẩm..." />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex flex-wrap gap-2 justify-content-md-end" id="product-filters">
+                <button class="btn btn-sm btn-outline-primary active px-3" data-filter="all">Tất cả</button>
+                <button class="btn btn-sm btn-outline-primary px-3" data-filter="new"><i class="bi bi-patch-check-fill text-info me-1"></i>Mới</button>
+                <button class="btn btn-sm btn-outline-primary px-3" data-filter="bestseller"><i class="bi bi-fire text-danger me-1"></i>Bán chạy</button>
+                <button class="btn btn-sm btn-outline-primary px-3" data-filter="offer"><i class="bi bi-gift text-success me-1"></i>Ưu đãi</button>
+            </div>
+        </div>
+    </div>
+
     <partial name="_ProductsGridPartial" model="Model" />
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('live-search');
+            const filterButtons = document.querySelectorAll('#product-filters button');
+            const productCards = document.querySelectorAll('.product-card-item');
+            const countBadge = document.getElementById('products-count-badge');
+            
+            let activeFilter = 'all';
+            let searchQuery = '';
+
+            function filterProducts() {
+                let visibleCount = 0;
+
+                productCards.forEach(card => {
+                    const title = card.getAttribute('data-title') || '';
+                    const brand = card.getAttribute('data-brand') || '';
+                    const isNew = card.getAttribute('data-new') === 'true';
+                    const isBestseller = card.getAttribute('data-bestseller') === 'true';
+                    const isOffer = card.getAttribute('data-offer') === 'true';
+
+                    const matchesSearch = title.includes(searchQuery) || brand.includes(searchQuery);
+                    
+                    let matchesFilter = true;
+                    if (activeFilter === 'new') matchesFilter = isNew;
+                    else if (activeFilter === 'bestseller') matchesFilter = isBestseller;
+                    else if (activeFilter === 'offer') matchesFilter = isOffer;
+
+                    if (matchesSearch && matchesFilter) {
+                        card.style.display = 'flex';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1)';
+                        }, 10);
+                        visibleCount++;
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.9)';
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                        }, 300);
+                    }
+                });
+
+                if (countBadge) {
+                    countBadge.textContent = `Hiển thị ${visibleCount} sản phẩm`;
+                }
+            }
+
+            // Search input handler
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    searchQuery = e.target.value.toLowerCase().trim();
+                    filterProducts();
+                });
+            }
+
+            // Filter button handler
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    activeFilter = btn.getAttribute('data-filter');
+                    filterProducts();
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,301 @@
+@model ElectronicShopMVC.Model.Order
+@{
+    ViewData["Title"] = "Chi tiết Đơn hàng";
+    var histories = ViewBag.Histories as List<ElectronicShopMVC.Model.OrderStatusHistory> ?? new List<ElectronicShopMVC.Model.OrderStatusHistory>();
+    var transactions = ViewBag.Transactions as List<ElectronicShopMVC.Model.PaymentTransaction> ?? new List<ElectronicShopMVC.Model.PaymentTransaction>();
+
+    var statusText = Model.Status switch
+    {
+        ElectronicShopMVC.Utility.Constants.OrderStatus.Pending => "Chờ xử lý",
+        ElectronicShopMVC.Utility.Constants.OrderStatus.Processing => "Đang xử lý",
+        ElectronicShopMVC.Utility.Constants.OrderStatus.Approved => "Đã duyệt",
+        ElectronicShopMVC.Utility.Constants.OrderStatus.Completed => "Hoàn thành",
+        ElectronicShopMVC.Utility.Constants.OrderStatus.Cancelled => "Đã hủy",
+        _ => Model.Status.ToString()
+    };
+
+    var statusBadgeClass = Model.Status switch
+    {
+        ElectronicShopMVC.Utility.Constants.OrderStatus.Pending => "bg-warning text-dark",
+        ElectronicShopMVC.Utility.Constants.OrderStatus.Processing => "text-bg-primary",
+        ElectronicShopMVC.Utility.Constants.OrderStatus.Approved => "bg-info text-white",
+        ElectronicShopMVC.Utility.Constants.OrderStatus.Completed => "text-bg-success",
+        ElectronicShopMVC.Utility.Constants.OrderStatus.Cancelled => "text-bg-danger",
+        _ => "bg-secondary text-white"
+    };
+}
+
+<div class="container mt-4">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Cửa hàng</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Order" asp-action="Index">Đơn hàng của tôi</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Chi tiết #@Model.OrderId?.Substring(0, Math.Min(Model.OrderId.Length, 8))</li>
+        </ol>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+        <div>
+            <h2 class="h3 mb-1 fw-bold text-main">
+                Mã Đơn Hàng: <span class="text-primary font-monospace">@Model.OrderId</span>
+            </h2>
+            <span class="text-muted"><i class="bi bi-calendar3 me-1"></i>Đặt ngày @Model.Date.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge @statusBadgeClass fs-6 px-3 py-2">
+                @statusText
+            </span>
+            <a asp-action="Index" class="btn btn-secondary btn-sm py-2 px-3">
+                <i class="bi bi-arrow-left me-1"></i>Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Column left: Details & Items -->
+        <div class="col-lg-8">
+            <!-- Delivery Info Card -->
+            <div class="glass-panel p-4 mb-4">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-geo-alt text-danger"></i>Thông Tin Giao Hàng
+                </h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="small text-muted fw-semibold">ĐỊA CHỈ NHẬN HÀNG</div>
+                        <div class="text-main fw-semibold mt-1">@Model.StreetAddress</div>
+                        <div class="text-muted small">@Model.City, @Model.State</div>
+                        @if (!string.IsNullOrEmpty(Model.PostalCode))
+                        {
+                            <div class="text-muted small">Mã bưu điện: @Model.PostalCode</div>
+                        }
+                    </div>
+                    <div class="col-md-6">
+                        <div class="small text-muted fw-semibold">SỐ ĐIỆN THOẠI</div>
+                        <div class="text-main fw-bold mt-1">@Model.PhoneNumber</div>
+                        @if (!string.IsNullOrEmpty(Model.TrackingNumber))
+                        {
+                            <div class="mt-3">
+                                <div class="small text-muted fw-semibold">MÃ VẬN ĐƠN (TRACKING)</div>
+                                <span class="badge bg-dark text-white font-monospace mt-1 px-3 py-2 border border-secondary">
+                                    <i class="bi bi-box-seam me-1"></i>@Model.TrackingNumber
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ordered Items Card -->
+            <div class="glass-panel p-4">
+                <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                    <i class="bi bi-basket3 text-primary"></i>Sản Phẩm Đã Mua
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-borderless align-middle mb-0">
+                        <thead>
+                            <tr class="border-bottom border-secondary border-opacity-10">
+                                <th style="width: 10%;">Ảnh</th>
+                                <th style="width: 50%;">Sản phẩm</th>
+                                <th class="text-center" style="width: 15%;">Số lượng</th>
+                                <th class="text-end" style="width: 25%;">Đơn giá</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
+                                        {
+                                            <img src="@item.Product.ImageUrl" class="rounded-3 border border-dark border-opacity-5" style="width: 55px; height: 55px; object-fit: cover;" alt="@item.Product.Title" />
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-3 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center border" style="width: 55px; height: 55px;">
+                                                <i class="bi bi-laptop text-muted fs-4"></i>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-main">@item.Product?.Title</div>
+                                        <div class="text-muted small">Thương hiệu: @item.Product?.Brand</div>
+                                    </td>
+                                    <td class="text-center fw-semibold text-main">@item.Quantity</td>
+                                    <td class="text-end">
+                                        @if (item.DiscountAmount > 0)
+                                        {
+                                            <div class="text-decoration-line-through text-muted small">@item.OriginalPrice.ToString("N0")đ</div>
+                                            <div class="gradient-text-accent fw-bold">@item.Price.ToString("N0")đ</div>
+                                            <div class="text-success small fw-semibold">Giảm @item.DiscountAmount.ToString("N0")đ</div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-main fw-bold">@item.Price.ToString("N0")đ</div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Price breakdown -->
+                <div class="border-top border-secondary border-opacity-10 mt-4 pt-3 row justify-content-end">
+                    <div class="col-md-6 col-lg-5">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Tạm tính:</span>
+                            <span class="text-main fw-semibold">@Model.Subtotal.ToString("N0")đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Thuế VAT (5%):</span>
+                            <span class="text-main fw-semibold">@Model.Vat.ToString("N0")đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Phí giao hàng:</span>
+                            <span class="text-main fw-semibold">@Model.Shipping.ToString("N0")đ</span>
+                        </div>
+                        @if (Model.VoucherDiscount > 0)
+                        {
+                            <div class="d-flex justify-content-between mb-2 text-success">
+                                <span class="fw-semibold"><i class="bi bi-gift-fill me-1"></i>Chiết khấu Voucher (@Model.VoucherCode):</span>
+                                <span class="fw-bold">-@Model.VoucherDiscount.ToString("N0")đ</span>
+                            </div>
+                        }
+                        <div class="d-flex justify-content-between border-top border-secondary border-opacity-10 pt-2 mt-2">
+                            <span class="fw-bold text-main fs-5">Thanh toán:</span>
+                            <span class="gradient-text-accent fw-extrabold fs-5">@Model.Total.ToString("N0")đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column right: Timeline Tracker & Transactions -->
+        <div class="col-lg-4">
+            <!-- Timeline Tracking -->
+            <div class="glass-panel p-4 mb-4">
+                <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                    <i class="bi bi-clock-history text-primary"></i>Hành Trình Đơn Hàng
+                </h5>
+
+                @if (!histories.Any())
+                {
+                    <p class="text-muted small">Không tìm thấy thông tin lịch sử trạng thái.</p>
+                }
+                else
+                {
+                    <div class="position-relative ps-4 border-start border-primary border-opacity-20 ms-2 py-2">
+                        @for (int i = 0; i < histories.Count; i++)
+                        {
+                            var history = histories[i];
+                            var isLast = i == histories.Count - 1;
+
+                            var timelineText = history.NewStatus switch
+                            {
+                                "Pending" => "Đơn hàng đã được khởi tạo",
+                                "Processing" => "Hệ thống đang chuẩn bị hàng",
+                                "Approved" => "Đơn hàng đã được xác nhận & thanh toán",
+                                "Completed" => "Đơn hàng đã giao thành công",
+                                "Cancelled" => "Đơn hàng đã bị hủy",
+                                _ => $"Chuyển sang trạng thái: {history.NewStatus}"
+                            };
+
+                            var colorClass = history.NewStatus switch
+                            {
+                                "Pending" => "bg-warning",
+                                "Processing" => "bg-primary",
+                                "Approved" => "bg-info",
+                                "Completed" => "bg-success",
+                                "Cancelled" => "bg-danger",
+                                _ => "bg-secondary"
+                            };
+
+                            <div class="position-relative mb-4">
+                                <!-- Glowing Dot -->
+                                <span class="position-absolute rounded-circle @colorClass" style="width: 14px; height: 14px; left: -32px; top: 3px; box-shadow: 0 0 8px rgba(59, 130, 246, 0.5); z-index: 10;"></span>
+
+                                <div class="d-flex flex-column">
+                                    <span class="text-main fw-bold small">@timelineText</span>
+                                    <span class="text-muted small mt-1" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i>@history.ChangedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
+                                    @if (!string.IsNullOrEmpty(history.Notes))
+                                    {
+                                        <div class="p-2 rounded bg-light border border-dark border-opacity-5 mt-2 text-muted small" style="font-size: 0.8rem; line-height: 1.4;">
+                                            <i class="bi bi-sticky-fill text-muted me-1"></i>@history.Notes
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Transaction Audit Log -->
+            <div class="glass-panel p-4">
+                <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                    <i class="bi bi-wallet2 text-info"></i>Đối Soát Thanh Toán
+                </h5>
+
+                @if (!transactions.Any())
+                {
+                    <p class="text-muted small">Chưa ghi nhận giao dịch tài chính cho đơn hàng này.</p>
+                }
+                else
+                {
+                    @foreach (var trans in transactions)
+                    {
+                        var methodText = trans.PaymentMethod switch
+                        {
+                            "COD" => "Tiền mặt (COD)",
+                            "VNPay" => "Cổng VNPay Online",
+                            "BankTransfer" => "Chuyển khoản ngân hàng",
+                            _ => trans.PaymentMethod
+                        };
+
+                        var transStatusClass = trans.Status switch
+                        {
+                            "Success" => "text-success",
+                            "Pending" => "text-warning",
+                            "Failed" => "text-danger",
+                            "Refunded" => "text-info",
+                            _ => "text-muted"
+                        };
+
+                        var transStatusText = trans.Status switch
+                        {
+                            "Success" => "Thành công",
+                            "Pending" => "Chờ thanh toán",
+                            "Failed" => "Thất bại",
+                            "Refunded" => "Đã hoàn tiền",
+                            _ => trans.Status
+                        };
+
+                        <div class="p-3 rounded-4 bg-white bg-opacity-60 border border-dark border-opacity-5 mb-3 shadow-sm">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small fw-semibold">PHƯƠNG THỨC</span>
+                                <span class="text-main fw-bold small">@methodText</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small fw-semibold">MÃ GIAO DỊCH</span>
+                                <span class="text-main font-monospace small">@(trans.TransactionReference ?? "N/A")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small fw-semibold">SỐ TIỀN</span>
+                                <span class="gradient-text-accent fw-bold small">@trans.Amount.ToString("N0")đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small fw-semibold">TRẠNG THÁI</span>
+                                <span class="fw-bold small @transStatusClass">@transStatusText</span>
+                            </div>
+                            <div class="border-top border-secondary border-opacity-10 mt-2 pt-2 text-muted small" style="font-size: 0.72rem; word-break: break-all;">
+                                <i class="bi bi-clock me-1"></i>@trans.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

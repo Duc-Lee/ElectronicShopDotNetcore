@@ -1,6 +1,56 @@
-﻿@model IEnumerable<Category>
+@model IEnumerable<Category>
 
-<footer class="py-2 mt-5 border-top position-absolute bottom-0 w-100">
+<footer class="footer-custom">
     <div class="container">
+        <div class="row g-4">
+            <!-- About Us Column -->
+            <div class="col-lg-4 col-md-6">
+                <a class="d-inline-block mb-3 text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span id="aurora-text" style="font-size: 1.5rem;"><i class="bi bi-cpu me-2"></i>E-Shop</span>
+                </a>
+                <p class="text-muted" style="line-height: 1.6; font-size: 0.9rem;">
+                    Nơi trải nghiệm mua sắm thiết bị công nghệ hàng đầu. Chúng tôi tự hào đem đến các dòng laptop, điện thoại và phụ kiện chính hãng với dịch vụ chăm sóc khách hàng đẳng cấp nhất.
+                </p>
+                <div class="d-flex mt-3">
+                    <a href="#" class="social-icon" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-icon" title="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-icon" title="Twitter"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="social-icon" title="Youtube"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+
+            <!-- Categories Dynamic Column -->
+            <div class="col-lg-4 col-md-6">
+                <h5 class="fw-bold">Thể Loại Nổi Bật</h5>
+                <ul class="list-unstyled d-flex flex-wrap gap-2 mt-3">
+                    @foreach (var category in Model.Take(6).OrderBy(c => c.DisplayOrder))
+                    {
+                        <li>
+                            <a asp-controller="Home" asp-action="Category" asp-route-id="@category.Id" class="badge bg-secondary bg-opacity-20 text-info text-decoration-none border border-secondary border-opacity-10 px-3 py-2">
+                                @category.Name
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            <!-- Contact & Newsletter Column -->
+            <div class="col-lg-4 col-md-12">
+                <h5 class="fw-bold">Đăng Ký Nhận Tin</h5>
+                <p class="text-muted small mb-3">Nhận thông báo sớm nhất về các đợt giảm giá, ưu đãi đặc biệt và sản phẩm mới ra mắt.</p>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" placeholder="Email của bạn..." aria-label="Recipient's email">
+                    <button class="btn btn-primary" type="button"><i class="bi bi-send-fill"></i></button>
+                </div>
+                <div class="text-muted small">
+                    <i class="bi bi-geo-alt-fill text-info me-2"></i> Hà Nội, Việt Nam<br/>
+                    <i class="bi bi-telephone-fill text-info me-2"></i> Hotline: 1900 8888
+                </div>
+            </div>
+        </div>
+
+        <div class="border-top border-secondary border-opacity-10 mt-5 pt-4 text-center">
+            <p class="text-muted mb-0 small">&copy; @DateTime.Now.Year E-Shop. Bảo lưu mọi quyền.</p>
+        </div>
     </div>
 </footer>

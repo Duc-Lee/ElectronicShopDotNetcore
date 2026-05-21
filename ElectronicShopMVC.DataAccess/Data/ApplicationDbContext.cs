@@ -1,4 +1,4 @@
-﻿using ElectronicShopMVC.Model;
+using ElectronicShopMVC.Model;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -20,49 +20,116 @@ namespace ElectronicShopMVC.DataAccess.Data
         public DbSet<ShoppingCartItem> UserProductShoppingCarts { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Voucher> Vouchers { get; set; }
+        public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
+        public DbSet<PaymentTransaction> PaymentTransactions { get; set; }
+
+        private void ProcessSaveInterceptor()
+        {
+            var entries = ChangeTracker.Entries();
+            foreach (var entry in entries)
+            {
+                // Soft delete handling
+                if (entry.State == EntityState.Deleted)
+                {
+                    if (entry.Entity is Product product)
+                    {
+                        entry.State = EntityState.Modified;
+                        product.IsDeleted = true;
+                        product.UpdatedAt = DateTime.UtcNow;
+                    }
+                    else if (entry.Entity is Category category)
+                    {
+                        entry.State = EntityState.Modified;
+                        category.IsDeleted = true;
+                        category.UpdatedAt = DateTime.UtcNow;
+                    }
+                    else if (entry.Entity is Voucher voucher)
+                    {
+                        entry.State = EntityState.Modified;
+                        voucher.IsDeleted = true;
+                        voucher.UpdatedAt = DateTime.UtcNow;
+                    }
+                }
+                
+                // Audit metadata handling
+                if (entry.State == EntityState.Added)
+                {
+                    if (entry.Entity is Product p)
+                    {
+                        p.CreatedAt = DateTime.UtcNow;
+                    }
+                    else if (entry.Entity is Category c)
+                    {
+                        c.CreatedAt = DateTime.UtcNow;
+                    }
+                    else if (entry.Entity is Voucher v)
+                    {
+                        v.CreatedAt = DateTime.UtcNow;
+                    }
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    if (entry.Entity is Product p)
+                    {
+                        p.UpdatedAt = DateTime.UtcNow;
+                    }
+                    else if (entry.Entity is Category c)
+                    {
+                        c.UpdatedAt = DateTime.UtcNow;
+                    }
+                    else if (entry.Entity is Voucher v)
+                    {
+                        v.UpdatedAt = DateTime.UtcNow;
+                    }
+                }
+            }
+        }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            var deletedBooks = ChangeTracker.Entries<Product>()
+            ProcessSaveInterceptor();
+
+            var deletedProducts = ChangeTracker.Entries<Product>()
                 .Where(e => e.State == EntityState.Deleted);
 
-            foreach (var bookEntry in deletedBooks)
+            foreach (var productEntry in deletedProducts)
             {
-                var book = bookEntry.Entity;
-                var imagePath = book.ImageUrl;
+                var product = productEntry.Entity;
+                var imagePath = product.ImageUrl;
                 if (string.IsNullOrEmpty(imagePath))
                 {
                     continue;
                 }
-                DeleteBookImage(imagePath);
+                DeleteProductImage(imagePath);
             }
 
-            return await base.SaveChangesAsync();
-
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
         public override int SaveChanges()
         {
-            var deletedBooks = ChangeTracker.Entries<Product>()
+            ProcessSaveInterceptor();
+
+            var deletedProducts = ChangeTracker.Entries<Product>()
                 .Where(e => e.State == EntityState.Deleted);
 
-            foreach (var bookEntry in deletedBooks)
+            foreach (var productEntry in deletedProducts)
             {
-                var book = bookEntry.Entity;
-                var imagePath = book.ImageUrl;
+                var product = productEntry.Entity;
+                var imagePath = product.ImageUrl;
                 if (string.IsNullOrEmpty(imagePath))
                 {
                     continue;
                 }
-                DeleteBookImage(imagePath);
+                DeleteProductImage(imagePath);
             }
 
             return base.SaveChanges();
         }
 
-        private void DeleteBookImage(string? imagePath)
+        private void DeleteProductImage(string? imagePath)
         {
-
             if (!File.Exists(imagePath))
             {
                 return;
@@ -72,15 +139,95 @@ namespace ElectronicShopMVC.DataAccess.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             base.OnModelCreating(modelBuilder);
 
+            // Configure precise decimal scales for all money columns
+            foreach (var property in modelBuilder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetProperties())
+                .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
+            {
+                property.SetColumnType("decimal(18,2)");
+            }
+
+            // Production Database Indexes
+            modelBuilder.Entity<Product>()
+                .HasIndex(p => p.SKU)
+                .IsUnique();
+
+            modelBuilder.Entity<Voucher>()
+                .HasIndex(v => v.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<Order>()
+                .HasIndex(o => o.UserId);
+
+            // Global Query Filters for Soft-Deleted Tables
+            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
+            modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
+            modelBuilder.Entity<Voucher>().HasQueryFilter(v => !v.IsDeleted);
+
+            // Category Seed Data
             modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Hành động", DisplayOrder = 3 },
-                new Category { Id = 2, Name = "Kịch tính", DisplayOrder = 2 },
-                new Category { Id = 3, Name = "Kinh dị", DisplayOrder = 1 },
-                new Category { Id = 4, Name = "Khoa học viễn tưởng", DisplayOrder = 4 }
+                new Category { Id = 1, Name = "Laptop", DisplayOrder = 1, IsDeleted = false, CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new Category { Id = 2, Name = "Điện thoại", DisplayOrder = 2, IsDeleted = false, CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new Category { Id = 3, Name = "Linh kiện PC", DisplayOrder = 3, IsDeleted = false, CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+                new Category { Id = 4, Name = "Phụ kiện", DisplayOrder = 4, IsDeleted = false, CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
                 );
+
+            // Voucher Seed Data
+            modelBuilder.Entity<Voucher>().HasData(
+                new Voucher
+                {
+                    Id = 1,
+                    Code = "ESHOP10",
+                    Title = "Giảm giá 10% tổng hóa đơn",
+                    Description = "Ưu đãi chiết khấu 10% cho toàn bộ giá trị giỏ hàng trước thuế.",
+                    DiscountType = "Percentage",
+                    DiscountValue = 10m,
+                    MinOrderAmount = 0m,
+                    MaxUses = 1000,
+                    UsedCount = 0,
+                    StartDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    EndDate = new DateTime(2026, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+                    IsActive = true,
+                    IsDeleted = false,
+                    CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Voucher
+                {
+                    Id = 2,
+                    Code = "WELCOME50",
+                    Title = "Giảm ngay 50.000đ cho đơn hàng",
+                    Description = "Chiết khấu 50.000đ trực tiếp vào hóa đơn thanh toán.",
+                    DiscountType = "FixedAmount",
+                    DiscountValue = 50000m,
+                    MinOrderAmount = 100000m,
+                    MaxUses = 500,
+                    UsedCount = 0,
+                    StartDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    EndDate = new DateTime(2026, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+                    IsActive = true,
+                    IsDeleted = false,
+                    CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Voucher
+                {
+                    Id = 3,
+                    Code = "FREESHIP",
+                    Title = "Miễn phí vận chuyển toàn quốc",
+                    Description = "Miễn phí 100% phí giao hàng cho tất cả các đơn hàng.",
+                    DiscountType = "FreeShipping",
+                    DiscountValue = 0m,
+                    MinOrderAmount = 0m,
+                    MaxUses = 2000,
+                    UsedCount = 0,
+                    StartDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    EndDate = new DateTime(2026, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+                    IsActive = true,
+                    IsDeleted = false,
+                    CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                }
+            );
 
             modelBuilder.Entity<OrderItem>()
                 .HasOne(e => e.Product)
@@ -104,86 +251,98 @@ namespace ElectronicShopMVC.DataAccess.Data
                 new Product
                 {
                     Id = 1,
-                    Title = "Huyền Thoại Rồng Lửa",
-                    Author = "Nguyễn Nhật Ánh",
-                    Description = "Cuốn tiểu thuyết hành động với những pha giao tranh nghẹt thở giữa các nhân vật mạnh mẽ trong bối cảnh lịch sử Việt Nam.",
-                    ISBN = "VN0001001",
+                    Title = "Laptop Gaming ASUS ROG Strix",
+                    Brand = "ASUS",
+                    Description = "Cấu hình mạnh mẽ với RTX 4060, Intel Core i7 thế hệ mới nhất, màn hình 165Hz mượt mà.",
+                    SKU = "ES-LP-001",
                     Stock = 10,
-                    Price = 120,
-                    Price50 = 110,
-                    Price100 = 100,
-                    CategoryId = 1, // Hành động
-                    ImageUrl = ""
+                    Price = 35000000,
+                    Price50 = 34500000,
+                    Price100 = 34000000,
+                    CategoryId = 1, // Laptop
+                    ImageUrl = "",
+                    IsDeleted = false,
+                    CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 },
                 new Product
                 {
                     Id = 2,
-                    Title = "Mê Cung Tình Yêu",
-                    Author = "Trần Anh Tuấn",
-                    Description = "Một tác phẩm kịch tính xoay quanh những mối quan hệ phức tạp và những bí mật gia đình không thể giấu được.",
-                    ISBN = "VN0001002",
+                    Title = "iPhone 15 Pro Max 256GB",
+                    Brand = "Apple",
+                    Description = "Thiết kế vỏ Titan bền bỉ, chip A17 Pro siêu mạnh, hệ thống camera chuyên nghiệp.",
+                    SKU = "ES-PH-002",
                     Stock = 8,
-                    Price = 100,
-                    Price50 = 95,
-                    Price100 = 90,
-                    CategoryId = 2, // Kịch tính
-                    ImageUrl = ""
+                    Price = 29000000,
+                    Price50 = 28500000,
+                    Price100 = 28000000,
+                    CategoryId = 2, // Điện thoại
+                    ImageUrl = "",
+                    IsDeleted = false,
+                    CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 },
                 new Product
                 {
                     Id = 3,
-                    Title = "Bóng Ma Trong Đêm",
-                    Author = "Phạm Minh Đức",
-                    Description = "Cuốn sách kinh dị mang đến những tràng đêm rùng rợn với những hiện tượng siêu nhiên và bí ẩn chưa lời giải.",
-                    ISBN = "VN0001003",
+                    Title = "Card màn hình MSI RTX 4070 Ti",
+                    Brand = "MSI",
+                    Description = "Hiệu năng đồ họa đỉnh cao cho gaming 2K và 4K, tản nhiệt 3 quạt siêu mát.",
+                    SKU = "ES-PC-003",
                     Stock = 12,
-                    Price = 110,
-                    Price50 = 105,
-                    Price100 = 100,
-                    CategoryId = 3, // Kinh dị
-                    ImageUrl = ""
+                    Price = 22000000,
+                    Price50 = 21500000,
+                    Price100 = 21000000,
+                    CategoryId = 3, // Linh kiện PC
+                    ImageUrl = "",
+                    IsDeleted = false,
+                    CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 },
                 new Product
                 {
                     Id = 4,
-                    Title = "Vũ Trụ Huyền Bí",
-                    Author = "Lê Hoàng Nam",
-                    Description = "Một hành trình xuyên qua không gian và thời gian, khám phá những bí mật của vũ trụ trong cuốn tiểu thuyết khoa học viễn tưởng.",
-                    ISBN = "VN0001004",
-                    Stock = 5,
-                    Price = 130,
-                    Price50 = 125,
-                    Price100 = 120,
-                    CategoryId = 4, // Khoa học viễn tưởng
-                    ImageUrl = ""
+                    Title = "Chuột Logitech G Pro X Superlight",
+                    Brand = "Logitech",
+                    Description = "Trọng lượng siêu nhẹ, cảm biến HERO 25K chính xác vượt trội cho game thủ chuyên nghiệp.",
+                    SKU = "ES-AC-004",
+                    Stock = 15,
+                    Price = 2500000,
+                    Price50 = 2400000,
+                    Price100 = 2300000,
+                    CategoryId = 4, // Phụ kiện
+                    ImageUrl = "",
+                    IsDeleted = false,
+                    CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 },
                 new Product
                 {
                     Id = 5,
-                    Title = "Sắc Màu Đời Thường",
-                    Author = "Ngô Thị Mai",
-                    Description = "Tác phẩm văn học đặc sắc khắc họa cuộc sống thường nhật qua lăng kính tinh tế và đầy cảm hứng.",
-                    ISBN = "VN0001005",
+                    Title = "Samsung Galaxy S24 Ultra",
+                    Brand = "Samsung",
+                    Description = "Bút S-Pen tiện lợi, camera 200MP zoom siêu xa, màn hình phẳng độ sáng cực cao.",
+                    SKU = "ES-PH-005",
                     Stock = 7,
-                    Price = 90,
-                    Price50 = 85,
-                    Price100 = 80,
-                    CategoryId = 2, // Kịch tính
-                    ImageUrl = ""
+                    Price = 26000000,
+                    Price50 = 25500000,
+                    Price100 = 25000000,
+                    CategoryId = 2, // Điện thoại
+                    ImageUrl = "",
+                    IsDeleted = false,
+                    CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 },
                 new Product
                 {
                     Id = 6,
-                    Title = "Hành Trình Tương Lai",
-                    Author = "Vũ Minh Khang",
-                    Description = "Cuốn tiểu thuyết khoa học viễn tưởng đưa người đọc vào một thế giới tương lai với công nghệ tiên tiến và những thách thức không ngờ.",
-                    ISBN = "VN0001006",
-                    Stock = 9,
-                    Price = 140,
-                    Price50 = 135,
-                    Price100 = 130,
-                    CategoryId = 4, // Khoa học viễn tưởng
-                    ImageUrl = ""
+                    Title = "Bàn phím Akko 3098B Multi-mode",
+                    Brand = "Akko",
+                    Description = "Kết nối không dây, switch Akko độc quyền, thiết kế nhỏ gọn đầy đủ phím số.",
+                    SKU = "ES-AC-006",
+                    Stock = 20,
+                    Price = 1800000,
+                    Price50 = 1750000,
+                    Price100 = 1700000,
+                    CategoryId = 4, // Phụ kiện
+                    ImageUrl = "",
+                    IsDeleted = false,
+                    CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 }
               );
         }

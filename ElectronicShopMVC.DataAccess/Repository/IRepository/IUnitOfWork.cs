@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +14,9 @@ namespace ElectronicShopMVC.DataAccess.Repository.IRepository
         IOrderRepository Order { get; }
         IOrderItemRepository OrderItem { get; }
         ICartRepository ShoppingCart { get; }
+        IVoucherRepository Voucher { get; }
+        IOrderStatusHistoryRepository OrderStatusHistory { get; }
+        IPaymentTransactionRepository PaymentTransaction { get; }
 
         void Save();
     }

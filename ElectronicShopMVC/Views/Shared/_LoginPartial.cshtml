@@ -1,30 +1,33 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-<ul class="navbar-nav">
+<ul class="navbar-nav align-items-center gap-2">
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="aurora-text">
-                <i class="bi bi-person-fill me-1 fs-5"></i>@UserManager.GetUserName(User)
+            <a class="nav-link dropdown-toggle d-flex align-items-center text-white gap-1 px-3 py-2 border rounded-3 bg-secondary bg-opacity-20" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-color: rgba(255,255,255,0.08) !important;">
+                <i class="bi bi-person-circle fs-5 text-info"></i>
+                <span class="fw-semibold">@UserManager.GetUserName(User)</span>
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu dropdown-menu-end mt-2">
                 <li>
-                    <a class="dropdown-item" asp-page="/Account/Manage/Index" asp-area="Identity" title="Quản lý thông tin">
-                        Quản lý thông tin
+                    <a class="dropdown-item d-flex align-items-center gap-2" asp-page="/Account/Manage/Index" asp-area="Identity" title="Quản lý thông tin">
+                        <i class="bi bi-gear-fill"></i> Quản lý thông tin
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-page="/YourOrder" title="Đơn hàng">
-                        Đơn hàng
+                    <a class="dropdown-item d-flex align-items-center gap-2" asp-page="/YourOrder" title="Đơn hàng">
+                        <i class="bi bi-bag-check-fill"></i> Đơn hàng
                     </a>
                 </li>
-                <li><hr class="dropdown-divider"></li>
+                <li><hr class="dropdown-divider border-secondary opacity-20"></li>
                 <li>
                     <form class="dropdown-item px-1 py-0" id="logoutForm" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button id="logout" type="submit" class="btn btn-link text-decoration-none text-black">Đăng xuất</button>
+                        <button id="logout" type="submit" class="btn btn-link text-decoration-none text-danger w-100 text-start px-2 py-1 d-flex align-items-center gap-2">
+                            <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                        </button>
                     </form>
                 </li>
             </ul>
@@ -33,10 +36,14 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-white" id="aurora-text" asp-area="Identity" asp-page="/Account/Register">Đăng kí</a>
+            <a class="btn btn-outline-primary btn-sm px-3 py-2" asp-area="Identity" asp-page="/Account/Register">
+                <i class="bi bi-person-plus me-1"></i>Đăng ký
+            </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-white" id="aurora-text" asp-area="Identity" asp-page="/Account/Login">Đăng nhập</a>
+            <a class="btn btn-primary btn-sm px-3 py-2" asp-area="Identity" asp-page="/Account/Login">
+                <i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập
+            </a>
         </li>
     }
 </ul>

@@ -1,4 +1,4 @@
-﻿using ElectronicShopMVC.DataAccess.Repository.IRepository;
+using ElectronicShopMVC.DataAccess.Repository.IRepository;
 using ElectronicShopMVC.Model;
 using ElectronicShopMVC.Model.ViewModels;
 using ElectronicShopMVC.Utility;
@@ -122,9 +122,73 @@ namespace ElectronicShopMVC.Services
                     var scopedUnitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
                     var items = summaryVM.Cart.Items.ToList();
+                    decimal subtotal = summaryVM.Cart.Subtotal;
+                    decimal shipping = summaryVM.Cart.Shipping;
+                    decimal discount = 0;
 
-                    foreach (var item in items)
+                    Voucher? voucher = null;
+                    if (!string.IsNullOrEmpty(summaryVM.CouponCode))
                     {
+                        string code = summaryVM.CouponCode.Trim().ToUpper();
+                        voucher = scopedUnitOfWork.Voucher.Get(v => v.Code == code && v.IsActive && !v.IsDeleted);
+                        if (voucher != null)
+                        {
+                            if (DateTime.UtcNow < voucher.StartDate || DateTime.UtcNow > voucher.EndDate)
+                            {
+                                _logger.LogWarning("Voucher {Code} has expired or not started yet", code);
+                                return new ServiceResult { Success = false, Message = $"Mã giảm giá '{code}' đã hết hạn hoặc chưa đến thời gian áp dụng." };
+                            }
+                            if (voucher.MaxUses > 0 && voucher.UsedCount >= voucher.MaxUses)
+                            {
+                                _logger.LogWarning("Voucher {Code} usage limit reached", code);
+                                return new ServiceResult { Success = false, Message = $"Mã giảm giá '{code}' đã đạt số lượng sử dụng tối đa." };
+                            }
+                            if (subtotal < voucher.MinOrderAmount)
+                            {
+                                _logger.LogWarning("Order subtotal {Subtotal} is less than minimum order amount {MinAmount} for voucher {Code}", subtotal, voucher.MinOrderAmount, code);
+                                return new ServiceResult { Success = false, Message = $"Đơn hàng tối thiểu phải đạt {voucher.MinOrderAmount:N0}đ để áp dụng mã giảm giá này." };
+                            }
+
+                            if (string.Equals(voucher.DiscountType, "Percentage", StringComparison.OrdinalIgnoreCase))
+                            {
+                                discount = subtotal * (voucher.DiscountValue / 100m);
+                                if (voucher.MaxDiscountAmount.HasValue)
+                                {
+                                    discount = Math.Min(discount, voucher.MaxDiscountAmount.Value);
+                                }
+                            }
+                            else if (string.Equals(voucher.DiscountType, "FixedAmount", StringComparison.OrdinalIgnoreCase))
+                            {
+                                discount = Math.Min(subtotal, voucher.DiscountValue);
+                            }
+                            else if (string.Equals(voucher.DiscountType, "FreeShipping", StringComparison.OrdinalIgnoreCase))
+                            {
+                                discount = shipping;
+                            }
+
+                            order.VoucherId = voucher.Id;
+                            order.VoucherCode = voucher.Code;
+                            order.VoucherDiscount = discount;
+
+                            voucher.UsedCount += 1;
+                            scopedUnitOfWork.Voucher.Update(voucher);
+                        }
+                        else
+                        {
+                            return new ServiceResult { Success = false, Message = $"Mã giảm giá '{code}' không hợp lệ hoặc không tồn tại." };
+                        }
+                    }
+
+                    // Populate payment and fulfillment statuses
+                    order.PaymentStatus = summaryVM.PaymentStatus ?? "Pending";
+                    order.FulfillmentStatus = "Pending";
+
+                    decimal totalDistributed = 0;
+                    int itemCount = items.Count;
+
+                    for (int i = 0; i < itemCount; i++)
+                    {
+                        var item = items[i];
                         var product = scopedUnitOfWork.Product.GetById(item.productId);
                         
                         if (product == null)
@@ -133,15 +197,64 @@ namespace ElectronicShopMVC.Services
                             return new ServiceResult { Success = false, Message = $"Sản phẩm với ID {item.productId} không tồn tại." };
                         }
 
+                        decimal originalItemSubtotal = product.Price * item.quantity;
+                        decimal itemDiscount = 0;
+
+                        if (discount > 0 && subtotal > 0)
+                        {
+                            if (i == itemCount - 1)
+                            {
+                                itemDiscount = discount - totalDistributed;
+                            }
+                            else
+                            {
+                                itemDiscount = Math.Round(discount * (originalItemSubtotal / subtotal), 2);
+                                totalDistributed += itemDiscount;
+                            }
+                        }
+
+                        decimal discountedPrice = Math.Max(0, (originalItemSubtotal - itemDiscount) / item.quantity);
+
                         order.Items.Add(new OrderItem
                         {
                             ProductId = item.productId,
                             Quantity = item.quantity,
-                            Price = product.Price
+                            Price = Math.Round(discountedPrice, 2),
+                            OriginalPrice = product.Price,
+                            DiscountAmount = Math.Round(itemDiscount, 2)
                         });
                     }
 
                     scopedUnitOfWork.Order.Add(order);
+
+                    // Record initial order status history
+                    var statusHistory = new OrderStatusHistory
+                    {
+                        Order = order,
+                        OldStatus = "None",
+                        NewStatus = Constants.OrderStatus.Pending.ToString(),
+                        ChangedBy = summaryVM.Cart.UserId,
+                        ChangedAt = DateTime.UtcNow,
+                        Notes = "Đơn hàng được tạo thành công hệ thống."
+                    };
+                    scopedUnitOfWork.OrderStatusHistory.Add(statusHistory);
+
+                    // Record payment transaction
+                    string paymentMethod = summaryVM.PaymentMethod ?? "COD";
+                    var transaction = new PaymentTransaction
+                    {
+                        Order = order,
+                        PaymentMethod = paymentMethod,
+                        Amount = Math.Max(0, summaryVM.Cart.Total - discount),
+                        Status = (paymentMethod == "VNPay" ? "Success" : "Pending"),
+                        TransactionReference = summaryVM.TransactionReference,
+                        ResponsePayload = paymentMethod == "VNPay" 
+                            ? "Thanh toán qua cổng VNPay thành công." 
+                            : "Thanh toán bằng tiền mặt khi nhận hàng (COD).",
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    scopedUnitOfWork.PaymentTransaction.Add(transaction);
+
                     scopedUnitOfWork.ShoppingCart.ClearCart(summaryVM.Cart.UserId);
                     scopedUnitOfWork.Save();
                 }

@@ -1,0 +1,105 @@
+@model IEnumerable<ElectronicShopMVC.Model.Order>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<div class="container mt-4">
+    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-secondary border-opacity-10 pb-3">
+        <h2 class="h3 mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-clock-history text-primary"></i>
+            <span class="gradient-text">Đơn hàng của tôi</span>
+        </h2>
+        <span class="text-muted fs-6">Quản lý và theo dõi tiến trình đơn hàng</span>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="glass-panel p-5 text-center my-5">
+            <div class="mb-4">
+                <i class="bi bi-receipt text-muted opacity-50" style="font-size: 5rem;"></i>
+            </div>
+            <h4 class="fw-bold">Bạn chưa có đơn hàng nào</h4>
+            <p class="text-muted mb-4">Hãy tiếp tục khám phá các sản phẩm tuyệt vời của cửa hàng và bắt đầu mua sắm ngay.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 py-2">
+                <i class="bi bi-bag-fill me-2"></i>Mua sắm ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var order in Model)
+            {
+                var statusBadgeClass = order.Status switch
+                {
+                    ElectronicShopMVC.Utility.Constants.OrderStatus.Pending => "bg-warning text-dark",
+                    ElectronicShopMVC.Utility.Constants.OrderStatus.Processing => "text-bg-primary",
+                    ElectronicShopMVC.Utility.Constants.OrderStatus.Approved => "bg-info text-white",
+                    ElectronicShopMVC.Utility.Constants.OrderStatus.Completed => "text-bg-success",
+                    ElectronicShopMVC.Utility.Constants.OrderStatus.Cancelled => "text-bg-danger",
+                    _ => "bg-secondary text-white"
+                };
+
+                var statusText = order.Status switch
+                {
+                    ElectronicShopMVC.Utility.Constants.OrderStatus.Pending => "Chờ xử lý",
+                    ElectronicShopMVC.Utility.Constants.OrderStatus.Processing => "Đang xử lý",
+                    ElectronicShopMVC.Utility.Constants.OrderStatus.Approved => "Đã duyệt",
+                    ElectronicShopMVC.Utility.Constants.OrderStatus.Completed => "Hoàn thành",
+                    ElectronicShopMVC.Utility.Constants.OrderStatus.Cancelled => "Đã hủy",
+                    _ => order.Status.ToString()
+                };
+
+                <div class="col-12">
+                    <div class="glass-panel p-4 cart-item-row" style="border-left: 5px solid @(order.Status == ElectronicShopMVC.Utility.Constants.OrderStatus.Completed ? "var(--accent-emerald)" : order.Status == ElectronicShopMVC.Utility.Constants.OrderStatus.Cancelled ? "var(--accent-rose)" : "var(--accent-blue)") !important;">
+                        <div class="row align-items-center g-3">
+                            <div class="col-md-3">
+                                <div class="d-flex flex-column">
+                                    <span class="text-muted small fw-semibold">MÃ ĐƠN HÀNG</span>
+                                    <span class="text-main fw-bold font-monospace" style="font-size: 0.95rem;">@order.OrderId?.Substring(0, Math.Min(order.OrderId.Length, 15))...</span>
+                                    <span class="text-muted small mt-1"><i class="bi bi-calendar3 me-1"></i>@order.Date.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex flex-column">
+                                    <span class="text-muted small fw-semibold">SẢN PHẨM</span>
+                                    <span class="text-main fw-semibold">@order.Items.Sum(x => x.Quantity) sản phẩm</span>
+                                    <span class="text-muted small mt-1 text-truncate" style="max-width: 250px;">
+                                        @string.Join(", ", order.Items.Select(i => i.Product?.Title).Where(t => t != null))
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="d-flex flex-column">
+                                    <span class="text-muted small fw-semibold">TỔNG TIỀN</span>
+                                    <span class="gradient-text-accent fw-extrabold" style="font-size: 1.1rem;">
+                                        @order.Total.ToString("N0")đ
+                                    </span>
+                                    @if (order.VoucherDiscount > 0)
+                                    {
+                                        <span class="text-success small fw-semibold mt-1">
+                                            <i class="bi bi-gift me-1"></i>Đã giảm @order.VoucherDiscount.ToString("N0")đ
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-md-center">
+                                <div class="d-flex flex-column align-items-md-center">
+                                    <span class="text-muted small fw-semibold mb-1 d-md-block d-none">TRẠNG THÁI</span>
+                                    <span class="badge @statusBadgeClass" style="font-size: 0.75rem; width: fit-content;">
+                                        @statusText
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-md-end">
+                                <a asp-controller="Order" asp-action="Details" asp-route-id="@order.Id" class="btn btn-primary btn-sm w-100 py-2">
+                                    <i class="bi bi-eye-fill me-1"></i>Xem chi tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

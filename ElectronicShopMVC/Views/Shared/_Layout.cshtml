@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Book Shop</title>
+    <title>@ViewData["Title"] - Electronic Shop</title>
     <link rel="icon" type="image/x-icon" href="~/images/book-shop.png" />
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -17,18 +17,16 @@
     @await Component.InvokeAsync("Menu")
 
     <div class="container" id="main">
- 
         <main role="main" class="pb-3">
             <partial name="_Notification" />
             @RenderBody()
         </main>
     </div>
 
+    @await Component.InvokeAsync("Footer")
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="//cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -36,6 +34,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toaster/5.1.0/js/bootstrap-toaster.min.js" integrity="sha512-LKHDVlxKQ+ChADdnDsXJYU7LaUdGJk1X+Ab2rbFU11cqm+vhp2PGOWQIrl6K1NRZxHAdwPOYLPINPvUIEyBtVQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="~/js/addToCart.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-   
 </body>
 </html>

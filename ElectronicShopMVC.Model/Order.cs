@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -33,5 +33,25 @@ namespace ElectronicShopMVC.Model
         public string? PostalCode { get; set; }
         [Display(Name = "Số điện thoại")]
         public string? PhoneNumber { get; set; }
+
+        public int? VoucherId { get; set; }
+        [ForeignKey("VoucherId")]
+        public Voucher? Voucher { get; set; }
+
+        [MaxLength(50)]
+        public string? VoucherCode { get; set; }
+
+        public decimal VoucherDiscount { get; set; }
+
+        [Required]
+        [MaxLength(50)]
+        public string PaymentStatus { get; set; } = "Pending";
+
+        [Required]
+        [MaxLength(50)]
+        public string FulfillmentStatus { get; set; } = "Pending";
+
+        [MaxLength(100)]
+        public string? TrackingNumber { get; set; }
     }
 }

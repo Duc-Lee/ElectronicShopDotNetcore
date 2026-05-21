@@ -1,26 +1,37 @@
-﻿@{
+@{
     ViewData["Title"] = "Home";
 }
 
 @model IEnumerable<Category>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-primary bg-dark text-white border-bottom box-shadow mb-5">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top mb-5">
         <div class="container-fluid">
-            <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index" id="aurora-text">Trang chủ</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+            <a class="navbar-brand me-4" asp-area="" asp-controller="Home" asp-action="Index" id="aurora-text">
+                <i class="bi bi-cpu me-2"></i>E-Shop
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav me-auto">
+            <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-house-door me-1"></i>Trang chủ
+                        </a>
+                    </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="aurora-text">
-                            Thể loại
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-grid-fill me-1"></i>Thể loại
                         </a>
                         <ul class="dropdown-menu">
                             @foreach (var category in Model.OrderBy(category => category.DisplayOrder))
                             {
-                                <li><a asp-controller="Home" asp-action="Category" asp-route-id="@category.Id" class="dropdown-item">@category.Name</a></li>
+                                <li>
+                                    <a asp-controller="Home" asp-action="Category" asp-route-id="@category.Id" class="dropdown-item">
+                                        @category.Name
+                                    </a>
+                                </li>
                             }
                         </ul>
                     </li>
@@ -28,39 +39,59 @@
                     @if (User.IsInRole(StaticDetails.Role_Admin))
                     {
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="aurora-text">
-                                Quản lý 
+                            <a class="nav-link dropdown-toggle text-info" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-shield-lock me-1"></i>Quản lý Admin
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
                                     <a class="dropdown-item" asp-controller="Category" asp-action="Index" asp-area="Admin">
-                                        Thể loại
+                                        <i class="bi bi-tags me-2"></i>Quản lý Thể loại
                                     </a>
                                 </li>
-
                                 <li>
                                     <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-area="Admin">
-                                        Sản phẩm
+                                        <i class="bi bi-laptop me-2"></i>Quản lý Sản phẩm
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Order" asp-action="Index" asp-area="Admin">
+                                        <i class="bi bi-receipt me-2"></i>Quản lý Đơn hàng
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Voucher" asp-action="Index" asp-area="Admin">
+                                        <i class="bi bi-gift me-2"></i>Quản lý Voucher
                                     </a>
                                 </li>
                             </ul>
                         </li>
                     }
 
-                    @if (User.Identity.IsAuthenticated)
+                    @if (User.Identity!.IsAuthenticated)
                     {
                         <li class="nav-item">
-                            <a asp-area="Customer" asp-controller="ShoppingCart" asp-action="Index" class="nav-link text-white position-relative" id="aurora-text">
-                                <i class="bi bi-cart-fill me-1 text-white"></i>
-                                Giỏ hàng <span id="cart-amount"></span>
+                            <a asp-area="Customer" asp-controller="ShoppingCart" asp-action="Index" class="nav-link d-flex align-items-center">
+                                <i class="bi bi-cart3 me-1 text-info fs-5"></i>
+                                <span class="me-2">Giỏ hàng</span>
+                                <span id="cart-amount">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-area="" asp-controller="Order" asp-action="Index" class="nav-link">
+                                <i class="bi bi-clock-history me-1"></i>Đơn hàng của tôi
                             </a>
                         </li>
                     }
-
                 </ul>
-                <partial name="_LoginPartial" />
+                <div class="d-flex align-items-center">
+                    <partial name="_LoginPartial" />
+                </div>
             </div>
         </div>
     </nav>
 </header>
-<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<!-- Spacer to offset the fixed top navbar -->
+<div style="height: 85px;"></div>

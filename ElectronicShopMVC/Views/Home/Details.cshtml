@@ -1,118 +1,119 @@
-﻿@model Product
+@model Product
 @{
     ViewData["Title"] = $"{Model.Title}";
 }
 
-<div class="card shadow border-0 mt-4">
-    <div class="card-body">
-        <div class="py-3">
-            <div class="row">
-                <div class="col-6 col-md-2 offset-lg-1 pb-1">
-                    <a asp-action="Index" class="btn btn-outline-primary bg-gradient fw-semibold btn-sm text-uppercase">
-                        <small>Về trang chủ</small>
-                    </a>
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="offset-lg-1">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a asp-controller="Home" asp-action="Index">Sản phẩm</a>
-                            </li>
-                            @if (Model.Category != null)
-                            {
-                                <li class="breadcrumb-item">
-                                    <a asp-controller="Home" asp-action="Category" asp-route-id="@Model.CategoryId">
-                                        @Model.Category.Name
-                                    </a>
-                                </li>
-                            }
-                            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12 col-lg-3 offset-lg-1 text-center mb-3">
-                    @if (Model.ImageUrl != null)
+<div class="py-3">
+    <!-- Breadcrumb & Back Link -->
+    <div class="row align-items-center mb-4">
+        <div class="col-md-4 mb-2 mb-md-0">
+            <a asp-action="Index" class="btn btn-secondary btn-sm px-3 py-2 d-inline-flex align-items-center gap-2">
+                <i class="bi bi-arrow-left"></i> Về trang chủ
+            </a>
+        </div>
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb" class="d-flex justify-content-md-end">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index"><i class="bi bi-laptop me-1"></i>Sản phẩm</a>
+                    </li>
+                    @if (Model.Category != null)
                     {
-                        <img src="@Model.ImageUrl" width="100%" class="rounded" />
+                        <li class="breadcrumb-item">
+                            <a asp-controller="Home" asp-action="Category" asp-route-id="@Model.CategoryId">
+                                @Model.Category.Name
+                            </a>
+                        </li>
+                    }
+                    <li class="breadcrumb-item active text-truncate" style="max-width: 250px;" aria-current="page">@Model.Title</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Product Details Content -->
+    <div class="glass-panel p-4 p-md-5">
+        <div class="row g-5">
+            <!-- Product Image Column -->
+            <div class="col-lg-5 text-center">
+                <div class="details-image-card d-flex align-items-center justify-content-center bg-black bg-opacity-20" style="min-height: 380px;">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" class="img-fluid rounded-4" style="object-fit: contain; max-height: 340px; transition: transform 0.5s;" />
                     }
                     else
                     {
-                        <img src="https://placehold.co/500x600" width="100%" class="rounded" />
+                        <img src="https://placehold.co/500x375/1e293b/f8fafc?text=No+Image" class="img-fluid rounded-4" style="object-fit: contain; max-height: 340px;" />
                     }
                 </div>
-                <div class="col-12 col-lg-6 offset-lg-1">
-                    <div class="col-12 col-md-6 mb-1">
-                        @if (Model.IsNew)
-                        {
-                            <span class="badge text-bg-primary">Mới</span>
-                        }
-                        @if (Model.IsBestseller)
-                        {
-                            <span class="badge text-bg-danger mt-2">Bán chạy</span>
-                        }
-                        @if (Model.IsSpecialOffer)
-                        {
-                            <span class="badge text-bg-success mt-2">Ưu đãi đặc biệt</span>
-                        }
-                        @if (Model.Category != null)
-                        {
-                            <span class="badge text-bg-primary">
-                                @Model.Category.Name
+            </div>
+
+            <!-- Product Specs & Form Column -->
+            <div class="col-lg-7">
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    @if (Model.IsNew)
+                    {
+                        <span class="badge text-bg-primary"><i class="bi bi-patch-check-fill me-1"></i>Mới</span>
+                    }
+                    @if (Model.IsBestseller)
+                    {
+                        <span class="badge text-bg-danger"><i class="bi bi-fire me-1"></i>Bán chạy</span>
+                    }
+                    @if (Model.IsSpecialOffer)
+                    {
+                        <span class="badge text-bg-success"><i class="bi bi-gift-fill me-1"></i>Ưu đãi</span>
+                    }
+                    @if (Model.Category != null)
+                    {
+                        <span class="badge text-bg-info text-dark fw-bold">@Model.Category.Name</span>
+                    }
+                </div>
+
+                <h1 class="h2 fw-bold text-main mb-2">@Model.Title</h1>
+                <p class="text-info fs-5 fw-semibold mb-3">Thương hiệu: <span class="text-main">@Model.Brand</span></p>
+ 
+                <div class="d-flex align-items-center mb-4">
+                    <span class="text-muted small me-3">SKU: <strong class="text-main">@Model.SKU</strong></span>
+                    <span class="text-success small"><i class="bi bi-shield-fill-check me-1"></i>Bảo hành chính hãng 12 tháng</span>
+                </div>
+ 
+                <div class="border-top border-bottom border-secondary border-opacity-10 py-3 mb-4">
+                    <h3 class="text-info fw-bold mb-0">@Model.Price.ToString("c")</h3>
+                </div>
+ 
+                <!-- Product Description -->
+                <div class="mb-4">
+                    <h5 class="text-main fs-6 uppercase fw-semibold mb-2">Mô tả sản phẩm</h5>
+                    <div class="text-muted" style="line-height: 1.7; font-size: 0.95rem;">
+                        @Html.Raw(@Model.Description)
+                    </div>
+                </div>
+ 
+                <!-- Add to Cart Form -->
+                <div class="row align-items-center g-3">
+                    <div class="col-sm-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border text-muted fw-semibold" id="qty-addon">
+                                Số lượng
                             </span>
+                            <input min="1" max="1000" type="number" value="1" class="form-control text-center text-main bg-white border fw-bold" id="quantity-@Model.Id"
+                                   aria-label="Quantity input" aria-describedby="qty-addon" />
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            <button class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2 shopping-cart-btn" data-id="@Model.Id">
+                                <i class="bi bi-cart-plus-fill fs-5"></i> <span>THÊM VÀO GIỎ HÀNG</span>
+                            </button>
                         }
-                    </div>
-
-                    <div class="mb-3">
-                        <h3 class="text-uppercase fw-bold">@Model.Title</h3>
-                        <p class="fw-semibold mb-0">Hãng: @Model.Author</p>
-                    </div>
-
-                    <div class="row">
-                        <h6 class="text-dark text-opacity-50">SKU: @Model.ISBN</h6>
-                    </div>
-                    <div class="row pl-2 mt-3">
-                        <p class="text-secondary lh-sm">@Html.Raw(@Model.Description)</p>
-                    </div>
-
-                    <div class="row pl-2">
-                        <p class="fs-5 fw-bold">
-                            Giá:
-                            <span>
-                                @Model.Price.ToString("c")
-                            </span>
-                        </p>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-primary text-white border-0 fw-semibold"
-                                      id="inputGroup-sizing-default">
-                                    Số lượng
-                                </span>
-                                <input min="0" max="1000" type="number" value="1" class="form-control" id="quantity-@Model.Id"
-                                       aria-label="Quantity input" aria-describedby="inputGroup-sizing-default" />
-                            </div>
-                        </div>
-                        <div class="col-md-6 pb-1">
-                            @if (User.Identity!.IsAuthenticated)
-                            {
-                                <button class="btn btn-primary w-100 text-uppercase fw-semibold shopping-cart-btn" data-id="@Model.Id">
-                                    Thêm giỏ hàng
-                                </button>
-                            }
-                            else
-                            {
-                                <a class="btn btn-primary w-100 text-uppercase fw-semibold shopping-cart-btn"
-                                   asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path">
-                                    Thêm giỏ hàng
-                                </a>
-                            }
-                        </div>
+                        else
+                        {
+                            <a class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2"
+                               asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path">
+                                <i class="bi bi-cart-plus-fill fs-5"></i> <span>THÊM VÀO GIỎ HÀNG</span>
+                            </a>
+                        }
                     </div>
                 </div>
             </div>
